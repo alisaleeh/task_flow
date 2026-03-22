@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Widgets/custom_app_bar.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/description_input_field.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/priority_selector.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/save_task_button.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/schedule_card.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/section_title.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/title_input_field.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/description_input_field.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/priority_selector.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/save_task_button.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/schedule_card.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/section_title.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/title_input_field.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   const CreateTaskScreen({super.key});

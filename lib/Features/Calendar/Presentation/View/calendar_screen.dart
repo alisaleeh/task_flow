@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/calendar_header.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/calendar_tasks_list.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/custom_calendar_card.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/tasks_today_header.dart';
+import 'package:taskflow/Features/Calendar/Presentation/View/widgets/calendar_header.dart';
+import 'package:taskflow/Features/Calendar/Presentation/View/widgets/calendar_tasks_list.dart';
+import 'package:taskflow/Features/Calendar/Presentation/View/widgets/custom_calendar_card.dart';
+import 'package:taskflow/Features/Calendar/Presentation/View/widgets/tasks_today_header.dart';
 
 class CalendarScreen extends StatelessWidget {
   const CalendarScreen({super.key});

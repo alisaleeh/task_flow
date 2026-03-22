@@ -8,11 +8,11 @@ import 'package:taskflow/Features/Auth/Presentation/View/forgot_password_screen.
 import 'package:taskflow/Features/Auth/Presentation/View/login_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/sign_up_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/verification_screen.dart';
-import 'package:taskflow/Features/Home/Presentation/View/calendar_screen.dart';
-import 'package:taskflow/Features/Home/Presentation/View/create_task_screen.dart';
+import 'package:taskflow/Features/Calendar/Presentation/View/calendar_screen.dart';
+import 'package:taskflow/Features/Task/Presentation/View/create_task_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/View/home_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/View/main_layout_screen.dart';
-import 'package:taskflow/Features/Home/Presentation/View/task_details_screen.dart';
+import 'package:taskflow/Features/Task/Presentation/View/task_details_screen.dart';
 
 void main() {
   runApp(const MyApp());

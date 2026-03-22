@@ -3,11 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Widgets/custom_app_bar.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_details_actions.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_details_description.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_details_header.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_details_info_grid.dart';
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_details_subtasks.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_actions.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_description.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_header.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_info_grid.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_subtasks.dart';
 
 
 class TaskDetailsScreen extends StatelessWidget {

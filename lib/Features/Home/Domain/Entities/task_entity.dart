@@ -1,8 +1,9 @@
+enum TaskStatus { todo, inProgress, done }
 class TaskEntity {
   final String id;
   final String title;
   final String? subtitle;
-  final String status; 
+  final TaskStatus status; 
   final String time;
   final bool isCompleted;
 

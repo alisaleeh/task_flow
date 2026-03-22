@@ -193,7 +193,8 @@ class TaskCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Text(
-        task.status,
+
+       task.status.name,
         style: TextStyle(
           fontSize: 10.sp,
           fontWeight: FontWeight.bold,

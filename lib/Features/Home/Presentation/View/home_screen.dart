@@ -18,11 +18,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // ملاحظة هندسية: هذه البيانات المؤقتة ستُستبدل بـ BlocBuilder لاحقاً
   List<TaskEntity> tasks = [
-    const TaskEntity(id: '1', title: 'Design Review', subtitle: 'Update Figma files based on feedback', status: 'To Do', time: 'Today, 10:00 AM', isCompleted: false),
-    const TaskEntity(id: '2', title: 'Weekly Team Meeting', status: 'In Progress', time: 'Today, 10:00 AM', isCompleted: true),
-    const TaskEntity(id: '3', title: 'Write Content Report', subtitle: 'Analyze last month\'s post performance', status: 'To Do', time: 'Tomorrow, 02:00 PM', isCompleted: false),
-    const TaskEntity(id: '4', title: 'Buy Office Supplies', status: 'To Do', time: 'Oct 24', isCompleted: false),
-    const TaskEntity(id: '5', title: 'Gym Session', status: 'To Do', time: 'Today, 06:00 PM', isCompleted: false),
+    const TaskEntity(id: '1', title: 'Design Review', subtitle: 'Update Figma files based on feedback', status: TaskStatus.todo, time: 'Today, 10:00 AM', isCompleted: false),
+    const TaskEntity(id: '2', title: 'Weekly Team Meeting', status: TaskStatus.inProgress, time: 'Today, 10:00 AM', isCompleted: true),
+    const TaskEntity(id: '3', title: 'Write Content Report', subtitle: 'Analyze last month\'s post performance', status: TaskStatus.todo, time: 'Tomorrow, 02:00 PM', isCompleted: false),
+    const TaskEntity(id: '4', title: 'Buy Office Supplies', status: TaskStatus.todo, time: 'Oct 24', isCompleted: false),
+    const TaskEntity(id: '5', title: 'Gym Session', status: TaskStatus.todo, time: 'Today, 06:00 PM', isCompleted: false),
   ];
 
   @override

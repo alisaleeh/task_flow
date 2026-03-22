@@ -5,7 +5,7 @@ import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
 
 // تأكد من مسار الـ SectionTitle لديك
-import 'package:taskflow/Features/Home/Presentation/View/Widgets/section_title.dart';
+import 'package:taskflow/Features/Task/Presentation/View/Widgets/section_title.dart';
 
 class TaskDetailsDescription extends StatelessWidget {
   const TaskDetailsDescription({super.key});
