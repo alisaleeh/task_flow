@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
-import 'package:taskflow/Features/Home/Domain/Entities/task_entity.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/home_header.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_filter_row.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/task_card.dart';
@@ -17,21 +17,63 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // ملاحظة هندسية: هذه البيانات المؤقتة ستُستبدل بـ BlocBuilder لاحقاً
-  List<TaskEntity> tasks = [
-    const TaskEntity(id: '1', title: 'Design Review', subtitle: 'Update Figma files based on feedback', status: TaskStatus.todo, time: 'Today, 10:00 AM', isCompleted: false),
-    const TaskEntity(id: '2', title: 'Weekly Team Meeting', status: TaskStatus.inProgress, time: 'Today, 10:00 AM', isCompleted: true),
-    const TaskEntity(id: '3', title: 'Write Content Report', subtitle: 'Analyze last month\'s post performance', status: TaskStatus.todo, time: 'Tomorrow, 02:00 PM', isCompleted: false),
-    const TaskEntity(id: '4', title: 'Buy Office Supplies', status: TaskStatus.todo, time: 'Oct 24', isCompleted: false),
-    const TaskEntity(id: '5', title: 'Gym Session', status: TaskStatus.todo, time: 'Today, 06:00 PM', isCompleted: false),
-  ];
+  // ملاحظة: قمنا بإزالة كلمة const لأن DateTime.now() لا يمكن أن تكون ثابتة وقت الترجمة (Compile time)
 
+  List<TaskEntity> tasks = [
+    TaskEntity(
+      id: '1',
+      title: 'Design Review',
+      subtitle: 'Update Figma files based on feedback',
+      status: TaskStatus.todo,
+      dueDate: DateTime.now().copyWith(
+        hour: 10,
+        minute: 0,
+      ), // محاكاة للساعة 10 صباحاً اليوم
+      isCompleted:
+          false, // 👈 1. نحددها يدوياً هنا، لكن الكيان سيحسبها تلقائياً بناءً على الـ status
+    ),
+    TaskEntity(
+      id: '2',
+      title: 'Weekly Team Meeting',
+      status: TaskStatus
+          .inProgress, // 👈 لن نكتب isCompleted هنا، الكيان سيحسبها تلقائياً أنها false
+      dueDate: DateTime.now().copyWith(hour: 10, minute: 0),
+      isCompleted: false,
+    ),
+    TaskEntity(
+      id: '3',
+      title: 'Write Content Report',
+      subtitle: 'Analyze last month\'s post performance',
+      status: TaskStatus.todo,
+      dueDate: DateTime.now()
+          .add(const Duration(days: 1))
+          .copyWith(hour: 14, minute: 0), // Tomorrow 02:00 PM
+      isCompleted: false,
+    ),
+    TaskEntity(
+      id: '4',
+      title: 'Buy Office Supplies',
+      status: TaskStatus
+          .done, // 👈 بمجرد وضعها done، الـ isCompleted ستصبح true تلقائياً
+      dueDate: DateTime.now().copyWith(month: 10, day: 24), // Oct 24
+      isCompleted: false,
+    ),
+    TaskEntity(
+      id: '5',
+      title: 'Gym Session',
+      status: TaskStatus.todo,
+      dueDate: DateTime.now().copyWith(hour: 18, minute: 0), // Today 06:00 PM
+      isCompleted: true,
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     // 👈 1. تمت إزالة extendBody: true لأن الشاشة الحاضنة هي من تتولى ذلك
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
-        bottom: false, // 👈 2. نبقيها false ليتمكن المحتوى من النزول خلف شريط التنقل الخاص بالشاشة الحاضنة
+        bottom:
+            false, // 👈 2. نبقيها false ليتمكن المحتوى من النزول خلف شريط التنقل الخاص بالشاشة الحاضنة
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -88,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Task Deleted!'), 
+        content: Text('Task Deleted!'),
         backgroundColor: Colors.red,
         duration: Duration(seconds: 2),
       ),

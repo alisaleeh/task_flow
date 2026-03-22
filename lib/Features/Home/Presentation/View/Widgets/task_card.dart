@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
-import 'package:taskflow/Features/Home/Domain/Entities/task_entity.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
 class TaskCard extends StatelessWidget {
   final TaskEntity task;
@@ -140,7 +140,9 @@ class TaskCard extends StatelessWidget {
                         ),
                         AppSpacing.gapH4,
                         Text(
-                          task.time,
+                          task.dueDate != null
+                              ? '${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')} ${task.dueDate!.hour >= 12 ? 'PM' : 'AM'}'
+                              : 'No due time',
                           style: AppTextStyles.font12RegularLight,
                         ),
                       ],
@@ -193,8 +195,7 @@ class TaskCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Text(
-
-       task.status.name,
+        task.status.name,
         style: TextStyle(
           fontSize: 10.sp,
           fontWeight: FontWeight.bold,
