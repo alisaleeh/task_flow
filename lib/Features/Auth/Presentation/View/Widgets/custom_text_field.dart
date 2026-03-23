@@ -10,6 +10,7 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType? keyboardType;
   final TextInputAction? textinputaction;
+  final TextEditingController ? controller;
 
   const CustomTextField({
     super.key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.keyboardType,
     this.textinputaction,
+    this.controller,
   });
 
   @override
@@ -35,6 +37,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Text(widget.label, style: AppTextStyles.font14SemiBoldDark),
         AppSpacing.gapV8,
         TextFormField(
+          controller: widget.controller,
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();
           },

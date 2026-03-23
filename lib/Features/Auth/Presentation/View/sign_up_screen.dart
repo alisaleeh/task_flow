@@ -1,14 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
+import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/already_have_account_text.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/custom_text_field.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/primary_button.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/sign_up_header_texts.dart';
 
-class SignUpScreen extends StatelessWidget {
+// 1. تحويل الشاشة إلى StatefulWidget
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  // 2. تعريف المتغيرات خارج دالة الـ build
+  final TextEditingController fullnamecontroller = TextEditingController();
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
+
+  // 3. رفع الـ FormKey ليكون هنا لكي لا يتم إعادة إنشائه
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // 4. السحر الهندسي لمنع تسريب الذاكرة (Memory Leak)
+  @override
+  void dispose() {
+    fullnamecontroller.dispose();
+    emailcontroller.dispose();
+    passwordcontroller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,65 +43,95 @@ class SignUpScreen extends StatelessWidget {
       body: SafeArea(
         top: false,
         bottom: true,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: AppSpacing.screenPadding,
-              sliver: SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AppSpacing.gapV20,
-                    // 1. النصوص العلوية (تم تصميمها لتكون على اليسار)
-                    const SignUpHeaderTexts(),
-                    AppSpacing.gapV40, // مسافة أكبر قبل الفورم
-                    // 2. حقول الإدخال (إعادة استخدام سريعة جداً!)
-                    const CustomTextField(
-                      label: 'Full Name',
-                      hintText: 'Full Name',
-                      keyboardType: TextInputType.name,
-                      textinputaction: TextInputAction.next,
+        child: BlocConsumer<RegisterCubit, RegisterState>(
+          listener: (context, state) {
+            switch (state) {
+              case RegisterInitial():
+              case RegisterLoading():
+                break;
+              case RegisterFailure():
+                CustomSnackBar.showError(context, state.errorMessage);
+                break;
+              case RegisterSuccess():
+                CustomSnackBar.showSuccess(context, 'Registration successful!');
+                Navigator.pushNamed(context, AppRoutes.home);
+                break;
+            }
+          },
+          builder: (context, state) {
+            return Form(
+              key: _formKey, // 👈 الآن المفتاح آمن ولن يتغير
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: AppSpacing.screenPadding,
+                    sliver: SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AppSpacing.gapV20,
+                          const SignUpHeaderTexts(),
+                          AppSpacing.gapV40,
+
+                          CustomTextField(
+                            label: 'Full Name',
+                            hintText: 'Full Name',
+                            keyboardType: TextInputType.name,
+                            textinputaction: TextInputAction.next,
+                            controller: fullnamecontroller,
+                          ),
+                          AppSpacing.gapV16,
+                          CustomTextField(
+                            label: 'Email Address',
+                            hintText: 'Email Address',
+                            keyboardType: TextInputType.emailAddress,
+                            textinputaction: TextInputAction.next,
+                            controller: emailcontroller,
+                          ),
+                          AppSpacing.gapV16,
+                          CustomTextField(
+                            label: 'Password',
+                            hintText: 'Password',
+                            isPassword: true,
+                            textinputaction: TextInputAction.done,
+                            controller: passwordcontroller,
+                          ),
+                          AppSpacing.gapV16,
+
+                          state is RegisterLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors
+                                        .primaryOrange, // تأكد أن هذا اللون موجود عندك
+                                  ),
+                                )
+                              : PrimaryButton(
+                                  text: 'Sign Up',
+                                  hasIcon: true,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      FocusScope.of(context).unfocus();
+                                      context.read<RegisterCubit>().register(
+                                        fullnamecontroller.text.trim(),
+                                        emailcontroller.text.trim(),
+                                        passwordcontroller.text.trim(),
+                                      );
+                                    }
+                                  },
+                                ),
+                          AppSpacing.gapV24,
+                          const AlreadyHaveAccountText(),
+                          const Spacer(),
+                        ],
+                      ),
                     ),
-                    AppSpacing.gapV16,
-                    const CustomTextField(
-                      label: 'Email Address',
-                      hintText: 'Email Address',
-                      keyboardType: TextInputType.emailAddress,
-                      textinputaction: TextInputAction.next,
-                    ),
-                    AppSpacing.gapV16,
-                    const CustomTextField(
-                      label: 'Password',
-                      hintText: 'Password',
-                      isPassword: true,
-                      textinputaction: TextInputAction.next,
-                    ),
-                    AppSpacing.gapV16,
-                    const CustomTextField(
-                      label: 'Confirm Password',
-                      hintText: 'Confirm Password',
-                      isPassword: true,
-                      textinputaction: TextInputAction.done,
-                    ),
-                    AppSpacing.gapV32,
-                    // 3. زر التسجيل (بدون أيقونة)
-                    PrimaryButton(
-                      text: 'Sign Up',
-                      hasIcon: true, // 👈 هنا أخفينا السهم ليطابق تصميمك
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.verification);
-                      },
-                    ),
-                    AppSpacing.gapV24,
-                    const AlreadyHaveAccountText(),
-                    const Spacer(),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
