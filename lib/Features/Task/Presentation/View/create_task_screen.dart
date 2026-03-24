@@ -23,8 +23,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   String _selectedPriority = 'Medium'; // القيمة الافتراضية
-  String _selectedDate = 'Select Date';
-  String _selectedTime = 'Select Time';
+  final String _selectedDate = 'Select Date';
+  final String _selectedTime = 'Select Time';
 
   @override
   void dispose() {

@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 break;
               case LoginSuccess():
                 CustomSnackBar.showSuccess(context, 'Login successful!');
-                Navigator.pushReplacementNamed(context, AppRoutes.home); // نستخدم pushReplacement لمنع الرجوع لصفحة الدخول
+                Navigator.pushReplacementNamed(context, AppRoutes.mainLayout); // نستخدم pushReplacement لمنع الرجوع لصفحة الدخول
                 break;
             }
           },

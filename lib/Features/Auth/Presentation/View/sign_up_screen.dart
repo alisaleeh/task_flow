@@ -54,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 break;
               case RegisterSuccess():
                 CustomSnackBar.showSuccess(context, 'Registration successful!');
-                Navigator.pushNamed(context, AppRoutes.home);
+                Navigator.pushNamed(context, AppRoutes.mainLayout);
                 break;
             }
           },

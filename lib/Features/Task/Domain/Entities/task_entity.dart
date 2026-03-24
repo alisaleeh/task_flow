@@ -1,26 +1,29 @@
+import 'package:equatable/equatable.dart';
 import 'subtask_entity.dart';
 
 enum TaskStatus { todo, inProgress, done }
 enum TaskPriority { low, medium, high }
 
-class TaskEntity {
+class TaskEntity extends Equatable {
   final String id;
   final String title;
   final String? subtitle;
   final TaskStatus status;
   final DateTime dueDate;
-  final List<SubtaskEntity> subtasks; // 👈 المهام الفرعية تعيش داخل المهمة الرئيسية
-  final TaskPriority priority; // 👈 أضفنا أولوية للمهمة 
+  final List<SubtaskEntity> subtasks;
+  final TaskPriority priority;
+
   const TaskEntity({
     required this.id,
     required this.title,
     this.subtitle,
     required this.status,
     required this.dueDate,
-    this.subtasks = const [], required bool isCompleted,
-    this.priority = TaskPriority.medium, 
+    this.subtasks = const [],
+    this.priority = TaskPriority.medium,
   });
 
+  // 👈 تُحسب تلقائياً ولا داعي لتمريرها في الـ Constructor
   bool get isCompleted => status == TaskStatus.done;
 
   double get subtasksProgress {
@@ -28,4 +31,7 @@ class TaskEntity {
     final completedCount = subtasks.where((sub) => sub.isDone).length;
     return completedCount / subtasks.length;
   }
+
+  @override
+  List<Object?> get props => [id, title, subtitle, status, dueDate, subtasks, priority];
 }
