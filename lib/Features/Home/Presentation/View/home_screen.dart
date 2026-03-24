@@ -20,76 +20,106 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<TaskCubit>().fetchalltasks();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         bottom: false,
-        // 👈 1. نقلنا الـ BlocBuilder ليغلف الـ ScrollView بالكامل
         child: BlocBuilder<TaskCubit, TaskState>(
           builder: (context, state) {
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // 1. قسم الهيدر والفلاتر (سيظل ظاهراً دائماً)
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      AppSpacing.gapV24,
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
-                        child: HomeHeader(),
-                      ),
-                      AppSpacing.gapV24,
-                      const TaskFilterRow(),
-                      AppSpacing.gapV24,
-                    ],
-                  ),
-                ),
+            return RefreshIndicator(
+              color: AppColors.primaryOrange,
+              onRefresh: () async {
+                await context.read<TaskCubit>().fetchalltasks();
+              },
 
-                // 2. قسم قائمة المهام (نستخدم if مباشرة داخل مصفوفة الـ slivers!)
-                if (state is TaskLoading)
-                  // يجب تغليف الويدجت العادية بـ SliverToBoxAdapter أو SliverFillRemaining
-                  const SliverFillRemaining(
-                    child: Center(child: TasksLoadingWidget()), 
-                  )
-                else if (state is TaskFailure)
-                  SliverFillRemaining(
-                    child: TasksErrorWidget(
-                      errorMessage: state.errorMessage,
-                      onRetry: () {
-                        context.read<TaskCubit>().fetchalltasks();
-                      },
+              child: CustomScrollView(
+                physics:
+                    const AlwaysScrollableScrollPhysics(), // 👈 3. تغيير هام جداً!
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        AppSpacing.gapV24,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24.0),
+                          child: HomeHeader(),
+                        ),
+                        AppSpacing.gapV24,
+                        const TaskFilterRow(),
+                        AppSpacing.gapV24,
+                      ],
                     ),
-                  )
-                else if (state is TaskSuccess)
-                  SliverPadding(
-                    padding: EdgeInsets.only(
-                      left: 24.w,
-                      right: 24.w,
-                      bottom: 100.h,
-                    ),
-                    sliver: SliverList.separated(
-                      itemCount: state.task.length, // لاحظ أنك سميتها task وليس tasks
-                      separatorBuilder: (context, index) => AppSpacing.gapV16,
-                      itemBuilder: (context, index) {
-                        final task = state.task[index];
-                        return TaskCard(
-                          task: task,
-                          onDelete: () => _handleDelete(index),
-                          onOpenDetails: () {
-                            Navigator.pushNamed(context, AppRoutes.taskDetails);
-                          },
-                          onToggleCompletion: () {
-                            // سيتم ربطها بـ Cubit Method لاحقاً
-                          },
-                        );
-                      },
-                    ),
-                  )
-                else
-                  const SliverToBoxAdapter(child: SizedBox.shrink()),
-              ],
+                  ),
+
+                  // حالات الـ Cubit
+                  if (state is TaskLoading)
+                    const SliverFillRemaining(
+                      child: Center(child: TasksLoadingWidget()),
+                    )
+                  else if (state is TaskFailure)
+                    SliverFillRemaining(
+                      child: TasksErrorWidget(
+                        errorMessage: state.errorMessage,
+                        onRetry: () {
+                          context.read<TaskCubit>().fetchalltasks();
+                        },
+                      ),
+                    )
+                  else if (state is TaskSuccess)
+                    // 👈 إضافة حالة "لا يوجد مهام" التي تحدثنا عنها مسبقاً
+                    state.task.isEmpty
+                        ? SliverFillRemaining(
+                            child: Center(
+                              child: Text(
+                                'there is no tasks, start adding some! 🚀',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          )
+                        : SliverPadding(
+                            padding: EdgeInsets.only(
+                              left: 24.w,
+                              right: 24.w,
+                              bottom: 100.h,
+                            ),
+                            sliver: SliverList.separated(
+                              itemCount: state.task.length,
+                              separatorBuilder: (context, index) =>
+                                  AppSpacing.gapV16,
+                              itemBuilder: (context, index) {
+                                final task = state.task[index];
+                                return TaskCard(
+                                  task: task,
+                                  onDelete: () => _handleDelete(index),
+                                  onOpenDetails: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      AppRoutes.taskDetails,
+                                    );
+                                  },
+                                  onToggleCompletion: () {},
+                                );
+                              },
+                            ),
+                          )
+                  else
+                    const SliverToBoxAdapter(child: SizedBox.shrink()),
+                    SliverToBoxAdapter(child: AppSpacing.gapV48,),
+                ],
+                
+              ),
             );
           },
         ),
@@ -98,7 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleDelete(int index) {
-    // سيتم استبدال هذا لاحقاً بـ context.read<TaskCubit>().deleteTask(index)
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Task Deleted!'),

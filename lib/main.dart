@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
             AppRoutes.calendar: (context) => const CalendarScreen(),
             AppRoutes.mainLayout: (context) => BlocProvider(
               // استخدم fetchAllTasks إذا كنت عدلت اسمها، أو fetchalltasks حسب ما هي مكتوبة عندك
-              create: (context) => getIt<TaskCubit>()..fetchalltasks(),
+              create: (context) => getIt<TaskCubit>(),
               child: const MainLayoutScreen(),
             ),
           },

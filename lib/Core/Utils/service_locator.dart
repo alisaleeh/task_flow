@@ -12,6 +12,7 @@ import 'package:taskflow/Features/Auth/Domain/Use_Cases/login_use_case.dart';
 import 'package:taskflow/Features/Auth/Domain/Use_Cases/register_use_case.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
+import 'package:taskflow/Features/Home/Data/Data_sources/home_local_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Data_sources/home_remote_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
@@ -74,6 +75,9 @@ Future<void> setupServiceLocator() async {
     () => HomeRemoteDataSourceImp(
       apiService: getIt(),
     ), // أو حسب ما يتطلبه الـ Constructor عندك
+  );
+  getIt.registerLazySingleton<HomeLocalDataSource>(
+    () => HomeLocalDataSourceImpl(sharedPreferences: getIt()),
   );
 
   // Repository

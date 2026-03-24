@@ -7,21 +7,22 @@ abstract class HomeRemoteDataSource {
   Future<List<TaskEntity>> fetchAllTasks();
   Future<TaskSummaryEntity> fetchTasksSummary();
 }
+
 class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
   final ApiService apiService;
 
   HomeRemoteDataSourceImp({required this.apiService});
   @override
   Future<List<TaskEntity>> fetchAllTasks() async {
-    var result = await apiService.getData(endpoint: "/tasks"); 
-    
-    List<dynamic> tasksList = result['data']['data']; 
+    var result = await apiService.getData(endpoint: "tasks");
+
+    List<dynamic> tasksList = result['data']['data'];
 
     List<TaskEntity> tasks = [];
     for (var taskData in tasksList) {
       tasks.add(TaskModel.fromJson(taskData));
     }
-    
+
     return tasks;
   }
 
@@ -30,7 +31,4 @@ class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
     // TODO: implement fetchTasksSummary
     throw UnimplementedError();
   }
-
-
-
 }
