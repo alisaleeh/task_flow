@@ -12,6 +12,8 @@ import 'package:taskflow/Features/Auth/Domain/Use_Cases/login_use_case.dart';
 import 'package:taskflow/Features/Auth/Domain/Use_Cases/register_use_case.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
+import 'package:taskflow/Features/Home/Data/Data_sources/home_remote_data_source.dart';
+import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
@@ -28,7 +30,7 @@ Future<void> setupServiceLocator() async {
     dio.interceptors.add(ApiLoggerInterceptor());
     return dio;
   });
-  
+
   getIt.registerLazySingleton<ApiService>(() => ApiService(dio: getIt<Dio>()));
 
   // تهيئة SharedPreferences
@@ -40,10 +42,10 @@ Future<void> setupServiceLocator() async {
   // ==========================================
   // Data Sources
   getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(getIt()), 
+    () => AuthRemoteDataSourceImpl(getIt()),
   );
   getIt.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(sharedPreferences: getIt()), 
+    () => AuthLocalDataSourceImpl(sharedPreferences: getIt()),
   );
 
   // Repository
@@ -60,26 +62,26 @@ Future<void> setupServiceLocator() async {
   );
 
   // Cubits
-  getIt.registerFactory<LoginCubit>(
-    () => LoginCubit(getIt()),
-  );
-  getIt.registerFactory<RegisterCubit>(
-    () => RegisterCubit(getIt()),
-  );
-
+  getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
+  getIt.registerFactory<RegisterCubit>(() => RegisterCubit(getIt()));
 
   // ==========================================
   // 3. Home / Tasks Feature (قسم المهام) 👈 التعديل الجديد هنا
   // ==========================================
-  
+
   // Data Source (تأكد من اسم الكلاس الخاص بك)
   getIt.registerLazySingleton<HomeRemoteDataSource>(
-    () => HomeRemoteDataSourceImpl(apiService: getIt()), // أو حسب ما يتطلبه الـ Constructor عندك
+    () => HomeRemoteDataSourceImp(
+      apiService: getIt(),
+    ), // أو حسب ما يتطلبه الـ Constructor عندك
   );
 
   // Repository
   getIt.registerLazySingleton<HomeRepo>(
-    () => HomeRepoImpl(remoteDataSource: getIt()), // أضف الـ LocalDataSource لو كان موجوداً
+    () => HomeRepoImp(
+      remoteDataSource: getIt(),
+      localDataSource: getIt(),
+    ), // أضف الـ LocalDataSource لو كان موجوداً
   );
 
   // Use Case
@@ -88,7 +90,5 @@ Future<void> setupServiceLocator() async {
   );
 
   // Cubit
-  getIt.registerFactory<TaskCubit>(
-    () => TaskCubit(getIt()),
-  );
+  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt()));
 }
