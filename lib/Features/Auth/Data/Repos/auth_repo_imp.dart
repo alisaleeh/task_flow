@@ -1,13 +1,15 @@
 import 'package:dartz/dartz.dart';
-import 'package:taskflow/Core/Utils/failure.dart';
+import 'package:dio/dio.dart'; // 👈 تأكد من استيراد Dio
+import 'package:taskflow/Core/Utils/failure.dart'; // 👈 مسار ملف الأخطاء الخاص بك
 import 'package:taskflow/Features/Auth/Data/Data_sources/local_data_source.dart';
 import 'package:taskflow/Features/Auth/Data/Data_sources/remote_data_source.dart';
 import 'package:taskflow/Features/Auth/Domain/Entities/user_entity.dart';
 import 'package:taskflow/Features/Auth/Domain/Repo/auth_repo.dart';
 
 class AuthRepoImp extends AuthRepo {
-   final RemoteDataSource remoteDataSource;
+  final AuthRemoteDataSource remoteDataSource;
   final AuthLocalDataSource localDataSource;
+  
   AuthRepoImp({required this.remoteDataSource, required this.localDataSource});
 
   @override
@@ -17,12 +19,22 @@ class AuthRepoImp extends AuthRepo {
   ) async {
     try {
       final result = await remoteDataSource.login(email, password);
-      final UserEntity userEntity = result.$1; // استخراج UserModel من الـ Tuple
-      final String token = result.$2; // استخراج التوكن من الـ Tuple
+      final UserEntity userEntity = result.$1;
+      final String token = result.$2;
       await localDataSource.cacheUser(result.$1, token);
       return Right(userEntity);
+      
+    } on AppException catch (e) {
+      // 👈 السر هنا! إذا كان الخطأ قادماً من dioRequest نعرض الرسالة العربية الأنيقة
+      return Left(e.failure);
+      
+    } on DioException catch (e) {
+      // 👈 احتياطاً: إذا لم تكن تستخدم dioRequest في الـ DataSource
+      return Left(ServerFailure.fromDioError(e));
+      
     } catch (e) {
-      return Left(ServerFailure("حدث خطأ غير متوقع: ${e.toString()}", 500));
+      // 👈 أخطاء برمجية أخرى (مثل خطأ في تحويل البيانات)
+      return Left(ServerFailure(e.toString(), 500));
     }
   }
 
@@ -34,12 +46,20 @@ class AuthRepoImp extends AuthRepo {
   ) async {
     try {
       final result = await remoteDataSource.register(fullName, email, password);
-      final UserEntity userEntity = result.$1; // استخراج UserModel من الـ Tuple
-      final String token = result.$2; // استخراج التوكن من الـ Tuple
+      final UserEntity userEntity = result.$1;
+      final String token = result.$2;
       await localDataSource.cacheUser(result.$1, token);
       return Right(userEntity);
+      
+    } on AppException catch (e) {
+      // 👈 نفس المنطق هنا
+      return Left(e.failure);
+      
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioError(e));
+      
     } catch (e) {
-      return Left(ServerFailure(e.toString(), 500));
+      return Left(ServerFailure("حدث خطأ غير متوقع في التطبيق.", 500));
     }
   }
 }

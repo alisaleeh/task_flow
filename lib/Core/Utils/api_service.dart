@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 
 class ApiService {
-  static const baseURL = 'https://api.shihal.net/';
+  static const baseURL = 'https://task-managment-system.code-nest.cloud/';
   final Dio dio;
 
   ApiService({required this.dio});

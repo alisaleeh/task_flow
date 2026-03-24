@@ -120,8 +120,7 @@ class ServerFailure extends Failure {
           category: FailureCategory.network,
         );
       case DioExceptionType.unknown:
-      default:
-        if (dioException.error is SocketException) {
+      if (dioException.error is SocketException) {
           return const ServerFailure(
             'انقطع الاتصال أثناء إرسال البيانات. تحقق من اتصال الإنترنت وحاول مرة أخرى.',
             607,
@@ -160,11 +159,17 @@ class ServerFailure extends Failure {
     
     // تحديد الفئة المناسبة هندسياً
     FailureCategory determinedCategory = FailureCategory.unknown;
-    if (statusCode == 401) determinedCategory = FailureCategory.authentication;
-    else if (statusCode == 403) determinedCategory = FailureCategory.authorization;
-    else if (statusCode == 404) determinedCategory = FailureCategory.notFound;
-    else if (statusCode == 422 || statusCode == 400) determinedCategory = FailureCategory.validation;
-    else if (statusCode >= 500) determinedCategory = FailureCategory.server;
+    if (statusCode == 401) {
+      determinedCategory = FailureCategory.authentication;
+    } else if (statusCode == 403) {
+      determinedCategory = FailureCategory.authorization;
+    } else if (statusCode == 404) {
+      determinedCategory = FailureCategory.notFound;
+    } else if (statusCode == 422 || statusCode == 400) {
+      determinedCategory = FailureCategory.validation;
+    } else if (statusCode >= 500) {
+      determinedCategory = FailureCategory.server;
+    }
 
     return ServerFailure(
       errorMessage, 

@@ -13,7 +13,7 @@ import 'package:taskflow/Features/Auth/Presentation/View/Widgets/header_texts.da
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key}); // تم إضافة const
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -21,9 +21,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailcontroller = TextEditingController();
-
   final TextEditingController passwordcontroller = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     emailcontroller.dispose();
@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 break;
               case LoginSuccess():
                 CustomSnackBar.showSuccess(context, 'Login successful!');
-                Navigator.pushNamed(context, AppRoutes.home);
+                Navigator.pushReplacementNamed(context, AppRoutes.home); // نستخدم pushReplacement لمنع الرجوع لصفحة الدخول
                 break;
             }
           },
@@ -90,7 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           AppSpacing.gapV12,
 
-                          // زر نسيت كلمة المرور
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
@@ -107,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           AppSpacing.gapV32,
+                          
                           if (state is LoginLoading)
                             const Center(
                               child: CircularProgressIndicator(
@@ -128,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
 
                           AppSpacing.gapV24,
-
                           const BottomActionText(),
                           const Spacer(),
                         ],

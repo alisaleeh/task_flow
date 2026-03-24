@@ -1,7 +1,7 @@
 import 'package:taskflow/Core/Utils/api_service.dart';
 import 'package:taskflow/Features/Auth/Data/Models/user_model.dart';
 
-abstract class RemoteDataSource {
+abstract class AuthRemoteDataSource {
   // here we return a Tuple containing both the UserModel and the token, so we can cache them together in the Repo layer
   Future<(UserModel, String)> login(String email, String password);
 
@@ -12,10 +12,10 @@ abstract class RemoteDataSource {
   );
 }
 
-class RemoteDataSourceImpl implements RemoteDataSource {
+class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final ApiService _apiService;
 
-  RemoteDataSourceImpl(this._apiService);
+  AuthRemoteDataSourceImpl(this._apiService);
 
   @override
   Future<(UserModel, String)> login(String email, String password) async {
@@ -23,9 +23,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       endpoint: "auth/login",
       data: {"email": email, "password": password},
     );
-    final userData = UserModel.fromJson(response['data']);
-    // هون حسب ال API اللي بنستخدمه، ممكن التوكن يكون في مكان مختلف في الـ Response، تأكد من مكانه الصحيح
-    final String token = response["data"]["token"];
+
+    // 👈 1. الدخول إلى صندوق الـ "data" الرئيسي
+    final responseData = response['data'];
+    
+    // 👈 2. استخراج كائن المستخدم من داخل مفتاح "user"
+    final userData = UserModel.fromJson(responseData['user']);
+    
+    // 👈 3. استخراج التوكن باسمه الصحيح "accessToken"
+    final String token = responseData['accessToken'];
 
     return (userData, token);
   }
@@ -40,8 +46,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       endpoint: "auth/register",
       data: {"fullName": fullName, "email": email, "password": password},
     );
-    final userData = UserModel.fromJson(response['data']);
-    final String token = response["data"]["token"];
+
+    // 👈 تطبيق نفس المنطق الصحيح في شاشة التسجيل (لأن السيرفر سيرد بنفس الهيكلة غالباً)
+    final responseData = response['data'];
+    final userData = UserModel.fromJson(responseData['user']);
+    final String token = responseData['accessToken'];
+    
     return (userData, token);
   }
 }

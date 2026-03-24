@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// تأكد من صحة هذه المسارات لديك
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
+import 'package:taskflow/Core/Utils/app_bloc_observer.dart';
+import 'package:taskflow/Core/Utils/service_locator.dart';
+import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/forgot_password_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/login_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/sign_up_screen.dart';
@@ -14,7 +17,10 @@ import 'package:taskflow/Features/Home/Presentation/View/home_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/View/main_layout_screen.dart';
 import 'package:taskflow/Features/Task/Presentation/View/task_details_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupServiceLocator();
+  Bloc.observer = AppBlocObserver();
   runApp(const MyApp());
 }
 
@@ -31,36 +37,28 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'TaskFlow',
-
-          // --- بناء الثيم العام للتطبيق (Global Theme) ---
           theme: ThemeData(
-            scaffoldBackgroundColor:
-                AppColors.backgroundColor, // استخدام لونك المخصص
+            scaffoldBackgroundColor: AppColors.backgroundColor,
             primaryColor: AppColors.primaryOrange,
-
-            // تهيئة نظام الألوان ليتبع هويتك البرتقالية
             colorScheme: ColorScheme.fromSeed(
               seedColor: AppColors.primaryOrange,
               primary: AppColors.primaryOrange,
             ),
-
-            // السحر هنا: التحكم الكامل بألوان حقول الإدخال (TextFields)
             textSelectionTheme: TextSelectionThemeData(
-              cursorColor: AppColors.primaryOrange, // 1. لون المؤشر النابض
-              selectionColor: AppColors.primaryOrange.withValues(
-                alpha: 0.3,
-              ), // 2. لون الخلفية عند تظليل/تحديد النص
-              selectionHandleColor: AppColors
-                  .primaryOrange, // 3. لون "القطرة" التي تسحب منها النص
+              cursorColor: AppColors.primaryOrange,
+              selectionColor: AppColors.primaryOrange.withOpacity(0.3), // تم التعديل لتجنب الخطأ
+              selectionHandleColor: AppColors.primaryOrange,
             ),
           ),
-
-          home: child,
+          
+          // الاعتماد التام على خريطة التوجيه فقط
           initialRoute: AppRoutes.login,
 
-          // 2. تحديث خريطة المسارات لتستخدم الثوابت
           routes: {
-            AppRoutes.login: (context) => const LoginScreen(),
+            AppRoutes.login: (context) => BlocProvider(
+                  create: (context) => getIt<LoginCubit>(),
+                  child: LoginScreen(),
+                ),
             AppRoutes.signUp: (context) => const SignUpScreen(),
             AppRoutes.forgotPassword: (context) => const ForgotPasswordScreen(),
             AppRoutes.verification: (context) => const VerificationScreen(),
@@ -72,7 +70,6 @@ class MyApp extends StatelessWidget {
           },
         );
       },
-      child: const LoginScreen(),
     );
   }
 }
