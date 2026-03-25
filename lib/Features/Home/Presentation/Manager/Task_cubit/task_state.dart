@@ -18,3 +18,14 @@ final class TaskFailure extends TaskState {
 
   TaskFailure({required this.errorMessage});
 }
+
+final class DeleteTaskLoading extends TaskState {}
+
+final class DeleteTaskSuccess extends TaskState {
+  
+}
+
+final class DeleteTaskError extends TaskState {
+  final String errormessage;
+  DeleteTaskError(this.errormessage);
+}

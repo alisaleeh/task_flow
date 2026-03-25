@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Features/Calendar/Presentation/View/calendar_screen.dart';
+import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 
 // استيراد شاشاتك الثلاث
 import 'package:taskflow/Features/Home/Presentation/View/home_screen.dart';
@@ -43,8 +45,18 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
           _currentIndex !=
               2 // يمكنك إخفاء الزر في شاشة البروفايل إذا أردت
           ? FloatingActionButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRoutes.createTask),
+              onPressed: () async {
+                // 1. نفتح الشاشة وننتظر النتيجة
+                final result = await Navigator.pushNamed(
+                  context,
+                  AppRoutes.createTask,
+                );
+                // 2. إذا عادت الشاشة بـ true (يعني تم إنشاء مهمة بنجاح)
+                if (result == true) {
+                  // 3. نطلب من الـ Cubit تحديث القائمة!
+                  context.read<TaskCubit>().fetchalltasks();
+                }
+              },
               backgroundColor: AppColors.primaryOrange,
               shape: const CircleBorder(),
               elevation: 4,

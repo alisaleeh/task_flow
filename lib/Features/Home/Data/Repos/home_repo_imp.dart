@@ -55,4 +55,14 @@ class HomeRepoImp extends HomeRepo {
     // سيتم تطبيق نفس المنطق الهندسي (الذهاب للنت ثم الكاش) هنا لاحقاً
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<Failure, void>> deleteTask(String taskId) async {
+    try {
+      await remoteDataSource.deleteTask(taskId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to delete task. Please try again.', 500));
+    }
+  }
 }

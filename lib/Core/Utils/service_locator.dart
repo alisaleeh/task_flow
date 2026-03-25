@@ -17,6 +17,7 @@ import 'package:taskflow/Features/Home/Data/Data_sources/home_local_data_source.
 import 'package:taskflow/Features/Home/Data/Data_sources/home_remote_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
+import 'package:taskflow/Features/Home/Domain/Use_Cases/delete_task_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source.dart';
@@ -47,14 +48,26 @@ Future<void> setupServiceLocator() async {
   // ==========================================
   // 2. Auth Feature
   // ==========================================
-  getIt.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(getIt()));
-  getIt.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(sharedPreferences: getIt()));
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(getIt()),
+  );
+  getIt.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
 
-  getIt.registerLazySingleton<AuthRepo>(() => AuthRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImp(remoteDataSource: getIt(), localDataSource: getIt()),
+  );
 
-  getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(authRepo: getIt()));
-  getIt.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(authRepo: getIt()));
-  getIt.registerLazySingleton<CreateTeskUseCase>(() => CreateTeskUseCase(taskRepo: getIt()));
+  getIt.registerLazySingleton<LoginUseCase>(
+    () => LoginUseCase(authRepo: getIt()),
+  );
+  getIt.registerLazySingleton<RegisterUseCase>(
+    () => RegisterUseCase(authRepo: getIt()),
+  );
+  getIt.registerLazySingleton<CreateTeskUseCase>(
+    () => CreateTeskUseCase(taskRepo: getIt()),
+  );
 
   getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
   getIt.registerFactory<RegisterCubit>(() => RegisterCubit(getIt()));
@@ -62,23 +75,39 @@ Future<void> setupServiceLocator() async {
   // ==========================================
   // 3. Home Feature (Fetch Tasks)
   // ==========================================
-  getIt.registerLazySingleton<HomeRemoteDataSource>(() => HomeRemoteDataSourceImp(apiService: getIt()));
-  getIt.registerLazySingleton<HomeLocalDataSource>(() => HomeLocalDataSourceImpl(sharedPreferences: getIt()));
+  getIt.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImp(apiService: getIt()),
+  );
+  getIt.registerLazySingleton<HomeLocalDataSource>(
+    () => HomeLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
 
-  getIt.registerLazySingleton<HomeRepo>(() => HomeRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
+  getIt.registerLazySingleton<HomeRepo>(
+    () => HomeRepoImp(remoteDataSource: getIt(), localDataSource: getIt()),
+  );
 
-  getIt.registerLazySingleton<GetAllTasksUseCase>(() => GetAllTasksUseCase(homeRepo: getIt()));
+  getIt.registerLazySingleton<GetAllTasksUseCase>(
+    () => GetAllTasksUseCase(homeRepo: getIt()),
+  );
+  getIt.registerLazySingleton<DeleteTaskUseCase>(
+    () => DeleteTaskUseCase(homeRepo: getIt()),
+  );
 
-  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt()));
+  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt(), getIt()));
 
   // ==========================================
   // 4. Task Feature (Create Task) 👈 الإضافة الجديدة هنا
   // ==========================================
-  getIt.registerLazySingleton<TaskRemoteDataSource>(() => TaskRemoteDataSourceImpl(apiService: getIt()));
-  getIt.registerLazySingleton<TaskLocalDataSource>(() => TaskLocalDataSourceImpl(sharedPreferences: getIt()));
+  getIt.registerLazySingleton<TaskRemoteDataSource>(
+    () => TaskRemoteDataSourceImpl(apiService: getIt()),
+  );
+  getIt.registerLazySingleton<TaskLocalDataSource>(
+    () => TaskLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
 
-  getIt.registerLazySingleton<TaskRepo>(() => TaskRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
-
+  getIt.registerLazySingleton<TaskRepo>(
+    () => TaskRepoImp(remoteDataSource: getIt(), localDataSource: getIt()),
+  );
 
   getIt.registerFactory<CreateTaskCubit>(() => CreateTaskCubit(getIt()));
 }

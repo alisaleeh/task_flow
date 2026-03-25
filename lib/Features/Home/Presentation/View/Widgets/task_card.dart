@@ -31,7 +31,7 @@ class TaskCard extends StatelessWidget {
       ),
       secondaryBackground: _buildDismissBackground(
         // 👈 يفضل لاحقاً إضافة هذا اللون لـ AppColors (مثلاً AppColors.errorRed)
-        color: const Color(0xFFD32F2F),
+        color: AppColors.error,
         icon: Icons.delete_outline_rounded,
         alignment: Alignment.centerRight,
       ),

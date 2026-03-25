@@ -6,6 +6,7 @@ import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 abstract class HomeRemoteDataSource {
   Future<List<TaskEntity>> fetchAllTasks();
   Future<TaskSummaryEntity> fetchTasksSummary();
+  Future<void> deleteTask(String taskId);
 }
 
 class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
@@ -30,5 +31,10 @@ class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
   Future<TaskSummaryEntity> fetchTasksSummary() {
     // TODO: implement fetchTasksSummary
     throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> deleteTask(String taskId)async {
+   return  await apiService.deleteData(endpoint: "tasks/$taskId");
   }
 }

@@ -4,6 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Core/Constants/app_text_styles.dart';
+
+import 'package:taskflow/Core/Widgets/custom_snack_bar.dart'; 
+
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/tasks_error_widget.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/tasks_loading_widget.dart';
@@ -33,17 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         bottom: false,
-        child: BlocBuilder<TaskCubit, TaskState>(
+        // 👈 1. تم التحويل من BlocBuilder إلى BlocConsumer
+        child: BlocConsumer<TaskCubit, TaskState>(
+          // 👈 2. إضافة الـ Listener للاستماع لحالات الحذف
+          listener: (context, state) {
+            if (state is DeleteTaskSuccess) {
+              CustomSnackBar.showSuccess(context, 'Task deleted successfully!');
+            } else if (state is DeleteTaskError) {
+              CustomSnackBar.showError(context, state.errormessage);
+            }
+          },
           builder: (context, state) {
             return RefreshIndicator(
               color: AppColors.primaryOrange,
               onRefresh: () async {
                 await context.read<TaskCubit>().fetchalltasks();
               },
-
               child: CustomScrollView(
-                physics:
-                    const AlwaysScrollableScrollPhysics(), // 👈 3. تغيير هام جداً!
+                physics: const AlwaysScrollableScrollPhysics(), 
                 slivers: [
                   SliverToBoxAdapter(
                     child: Column(
@@ -75,12 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   else if (state is TaskSuccess)
-                    // 👈 إضافة حالة "لا يوجد مهام" التي تحدثنا عنها مسبقاً
                     state.task.isEmpty
                         ? SliverFillRemaining(
                             child: Center(
                               child: Text(
-                                'there is no tasks, start adding some! 🚀',
+                                'there are no tasks, start adding some! 🚀',
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   color: Colors.grey,
@@ -102,7 +112,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final task = state.task[index];
                                 return TaskCard(
                                   task: task,
-                                  onDelete: () => _handleDelete(index),
+                                  onDelete: () => _handleDelete(
+                                    context,
+                                    state.task[index].id,
+                                  ),
                                   onOpenDetails: () {
                                     Navigator.pushNamed(
                                       context,
@@ -116,9 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                   else
                     const SliverToBoxAdapter(child: SizedBox.shrink()),
-                    SliverToBoxAdapter(child: AppSpacing.gapV48,),
+                  SliverToBoxAdapter(child: AppSpacing.gapV48),
                 ],
-                
               ),
             );
           },
@@ -127,13 +139,66 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _handleDelete(int index) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Task Deleted!'),
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 2),
-      ),
+  void _handleDelete(BuildContext context, String taskId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        // نستخدم dialogContext لتجنب تداخل الـ context
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16), // حواف دائرية لشكل عصري
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: AppColors.error),
+              AppSpacing.gapH8,
+              Text('confirm deletion', style: AppTextStyles.font12RegularLight),
+            ],
+          ),
+          content: const Text(
+            'are you sure you want to delete this task? this action cannot be undone.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            // 👈 زر الإلغاء
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // إغلاق الـ Dialog فقط
+              },
+              child: const Text(
+                'cancel',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            // 👈 زر الحذف الفعلي
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // لون أحمر للتنبيه بخطورة الإجراء
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // 1. إغلاق الـ Dialog أولاً
+
+                // 2. استدعاء دالة الحذف من الكيوبت باستخدام الـ context الأصلي للشاشة
+                context.read<TaskCubit>().deleteTask(taskId);
+              },
+              child: const Text(
+                'delete',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

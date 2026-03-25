@@ -10,4 +10,5 @@ class GetAllTasksUseCase {
   Future<Either<Failure, List<TaskEntity>>> call() {
     return homeRepo.getAllTasks();
   }
+  
 }
