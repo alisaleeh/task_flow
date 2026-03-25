@@ -12,87 +12,73 @@ import 'package:taskflow/Features/Auth/Domain/Use_Cases/login_use_case.dart';
 import 'package:taskflow/Features/Auth/Domain/Use_Cases/register_use_case.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
+// --- Home Imports ---
 import 'package:taskflow/Features/Home/Data/Data_sources/home_local_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Data_sources/home_remote_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
+import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source.dart';
+// --- Task (Create) Imports ---
+import 'package:taskflow/Features/Task/Data/Data_sources/task_remote_data_source.dart';
+import 'package:taskflow/Features/Task/Data/Repo/task_repo_imp.dart';
+import 'package:taskflow/Features/Task/Domain/Repos/task_repo.dart';
+import 'package:taskflow/Features/Task/Domain/Use_Cases/create_tesk_use_case.dart';
+import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
   // ==========================================
-  // 1. Core & External (الأساسيات)
+  // 1. Core & External
   // ==========================================
   getIt.registerLazySingleton<Dio>(() {
     final dio = Dio();
-    // تركيب كاميرا المراقبة لمعرفة ما يحدث في الـ API
     dio.interceptors.add(ApiLoggerInterceptor());
     return dio;
   });
 
   getIt.registerLazySingleton<ApiService>(() => ApiService(dio: getIt<Dio>()));
 
-  // تهيئة SharedPreferences
   final sharedPreferences = await SharedPreferences.getInstance();
   getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
 
   // ==========================================
-  // 2. Auth Feature (قسم المصادقة)
+  // 2. Auth Feature
   // ==========================================
-  // Data Sources
-  getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(getIt()),
-  );
-  getIt.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(sharedPreferences: getIt()),
-  );
+  getIt.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(getIt()));
+  getIt.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(sharedPreferences: getIt()));
 
-  // Repository
-  getIt.registerLazySingleton<AuthRepo>(
-    () => AuthRepoImp(remoteDataSource: getIt(), localDataSource: getIt()),
-  );
+  getIt.registerLazySingleton<AuthRepo>(() => AuthRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
 
-  // Use Cases
-  getIt.registerLazySingleton<LoginUseCase>(
-    () => LoginUseCase(authRepo: getIt()),
-  );
-  getIt.registerLazySingleton<RegisterUseCase>(
-    () => RegisterUseCase(authRepo: getIt()),
-  );
+  getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(authRepo: getIt()));
+  getIt.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(authRepo: getIt()));
+  getIt.registerLazySingleton<CreateTeskUseCase>(() => CreateTeskUseCase(taskRepo: getIt()));
 
-  // Cubits
   getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
   getIt.registerFactory<RegisterCubit>(() => RegisterCubit(getIt()));
 
   // ==========================================
-  // 3. Home / Tasks Feature (قسم المهام) 👈 التعديل الجديد هنا
+  // 3. Home Feature (Fetch Tasks)
   // ==========================================
+  getIt.registerLazySingleton<HomeRemoteDataSource>(() => HomeRemoteDataSourceImp(apiService: getIt()));
+  getIt.registerLazySingleton<HomeLocalDataSource>(() => HomeLocalDataSourceImpl(sharedPreferences: getIt()));
 
-  // Data Source (تأكد من اسم الكلاس الخاص بك)
-  getIt.registerLazySingleton<HomeRemoteDataSource>(
-    () => HomeRemoteDataSourceImp(
-      apiService: getIt(),
-    ), // أو حسب ما يتطلبه الـ Constructor عندك
-  );
-  getIt.registerLazySingleton<HomeLocalDataSource>(
-    () => HomeLocalDataSourceImpl(sharedPreferences: getIt()),
-  );
+  getIt.registerLazySingleton<HomeRepo>(() => HomeRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
 
-  // Repository
-  getIt.registerLazySingleton<HomeRepo>(
-    () => HomeRepoImp(
-      remoteDataSource: getIt(),
-      localDataSource: getIt(),
-    ), // أضف الـ LocalDataSource لو كان موجوداً
-  );
+  getIt.registerLazySingleton<GetAllTasksUseCase>(() => GetAllTasksUseCase(homeRepo: getIt()));
 
-  // Use Case
-  getIt.registerLazySingleton<GetAllTasksUseCase>(
-    () => GetAllTasksUseCase(homeRepo: getIt()),
-  );
-
-  // Cubit
   getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt()));
+
+  // ==========================================
+  // 4. Task Feature (Create Task) 👈 الإضافة الجديدة هنا
+  // ==========================================
+  getIt.registerLazySingleton<TaskRemoteDataSource>(() => TaskRemoteDataSourceImpl(apiService: getIt()));
+  getIt.registerLazySingleton<TaskLocalDataSource>(() => TaskLocalDataSourceImpl(sharedPreferences: getIt()));
+
+  getIt.registerLazySingleton<TaskRepo>(() => TaskRepoImp(remoteDataSource: getIt(), localDataSource: getIt()));
+
+
+  getIt.registerFactory<CreateTaskCubit>(() => CreateTaskCubit(getIt()));
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'subtask_entity.dart';
 
-enum TaskStatus { todo, inProgress, done }
+enum TaskStatus { open, inProgress, done }
 enum TaskPriority { low, medium, high }
 
 class TaskEntity extends Equatable {

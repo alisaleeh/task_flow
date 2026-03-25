@@ -10,7 +10,7 @@ class TaskRepoImp extends TaskRepo {
   final TaskLocalDataSource localDataSource;
   TaskRepoImp({required this.remoteDataSource, required this.localDataSource});
   @override
-  Future<Either<Failure, void>> createTask(TaskEntity task) async {
+  Future<Either<Failure, TaskEntity>> createTask(TaskEntity task) async {
     try {
       await remoteDataSource.createtask(
         title: task.title,
@@ -18,7 +18,7 @@ class TaskRepoImp extends TaskRepo {
         priority: _mapPriorityToString(task.priority),
         status: _mapStatusToString(task.status),
       );
-      return Right(null);
+      return Right(task);
     } catch (e) {
       return Left(
         ServerFailure('there is an error while fetching cached data.', 500),
@@ -68,7 +68,7 @@ String _mapStatusToString(TaskStatus status) {
       return 'DONE';
     case TaskStatus.inProgress:
       return 'IN_PROGRESS';
-    case TaskStatus.todo:
-      return 'TO_DO';
+    case TaskStatus.open:
+      return 'OPEN';
   }
 }

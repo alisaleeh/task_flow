@@ -7,7 +7,7 @@ class CreateTeskUseCase {
   final TaskRepo taskRepo;
 
   CreateTeskUseCase({required this.taskRepo});
-  Future<Either<Failure, void>> createTask(TaskEntity task) {
+  Future<Either<Failure, TaskEntity>> createTask(TaskEntity task) {
     return taskRepo.createTask(task);
   }
 }

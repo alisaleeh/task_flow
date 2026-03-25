@@ -8,3 +8,21 @@ sealed class CreateTaskState extends Equatable {
 }
 
 final class CreateTaskInitial extends CreateTaskState {}
+final class CreateTaskLoading extends CreateTaskState {}
+final class CreateTaskSuccess extends CreateTaskState {
+  final TaskEntity createdTask;
+
+  const CreateTaskSuccess(this.createdTask);
+
+  @override
+  List<Object> get props => [createdTask];
+}
+final class CreateTaskError extends CreateTaskState {
+  final String message;
+
+  const CreateTaskError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+

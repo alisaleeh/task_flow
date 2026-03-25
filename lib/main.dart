@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Utils/app_bloc_observer.dart';
 import 'package:taskflow/Core/Utils/service_locator.dart';
+// Managers
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
+import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
+// Views
 import 'package:taskflow/Features/Auth/Presentation/View/forgot_password_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/login_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/sign_up_screen.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/verification_screen.dart';
 import 'package:taskflow/Features/Calendar/Presentation/View/calendar_screen.dart';
-import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
+import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
 import 'package:taskflow/Features/Task/Presentation/View/create_task_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/View/home_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/View/main_layout_screen.dart';
@@ -46,38 +48,39 @@ class MyApp extends StatelessWidget {
               seedColor: AppColors.primaryOrange,
               primary: AppColors.primaryOrange,
             ),
-            textSelectionTheme: TextSelectionThemeData(
-              cursorColor: AppColors.primaryOrange,
-              selectionColor: AppColors.primaryOrange.withOpacity(
-                0.3,
-              ), // تم التعديل لتجنب الخطأ
-              selectionHandleColor: AppColors.primaryOrange,
-            ),
           ),
-
-          // الاعتماد التام على خريطة التوجيه فقط
           initialRoute: AppRoutes.login,
-
           routes: {
             AppRoutes.login: (context) => BlocProvider(
-              create: (context) => getIt<LoginCubit>(),
-              child: LoginScreen(),
-            ),
+                  create: (context) => getIt<LoginCubit>(),
+                  child: LoginScreen(),
+                ),
             AppRoutes.signUp: (context) => BlocProvider(
-              create: (context) => getIt<RegisterCubit>(),
-              child: SignUpScreen(),
-            ),
+                  create: (context) => getIt<RegisterCubit>(),
+                  child: SignUpScreen(),
+                ),
             AppRoutes.forgotPassword: (context) => const ForgotPasswordScreen(),
             AppRoutes.verification: (context) => const VerificationScreen(),
-            AppRoutes.home: (context) => const HomeScreen(),
-            AppRoutes.createTask: (context) => const CreateTaskScreen(),
+            
+            // 👈 تعديل HomeScreen لربطها بـ TaskCubit الموجود فعلياً
+            AppRoutes.home: (context) => BlocProvider(
+                  create: (context) => getIt<TaskCubit>(),
+                  child: const HomeScreen(),
+                ),
+
+            // 👈 تغليف شاشة إنشاء المهمة بالـ Cubit الخاص بها
+            AppRoutes.createTask: (context) => BlocProvider(
+                  create: (context) => getIt<CreateTaskCubit>(),
+                  child: const CreateTaskScreen(),
+                ),
+
             AppRoutes.taskDetails: (context) => const TaskDetailsScreen(),
             AppRoutes.calendar: (context) => const CalendarScreen(),
+            
             AppRoutes.mainLayout: (context) => BlocProvider(
-              // استخدم fetchAllTasks إذا كنت عدلت اسمها، أو fetchalltasks حسب ما هي مكتوبة عندك
-              create: (context) => getIt<TaskCubit>(),
-              child: const MainLayoutScreen(),
-            ),
+                  create: (context) => getIt<TaskCubit>(),
+                  child: const MainLayoutScreen(),
+                ),
           },
         );
       },

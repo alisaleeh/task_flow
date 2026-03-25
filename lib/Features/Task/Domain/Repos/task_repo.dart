@@ -4,7 +4,7 @@ import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
 abstract class TaskRepo {
   Future<Either<Failure, TaskEntity>> getTaskDetails(String taskId);
-  Future<Either<Failure, void>> createTask(TaskEntity task);
+  Future<Either<Failure, TaskEntity>> createTask(TaskEntity task);
   Future<Either<Failure, void>> updateTask(
     String taskId,
     TaskStatus status,

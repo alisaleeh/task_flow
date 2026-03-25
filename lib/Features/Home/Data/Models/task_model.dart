@@ -60,7 +60,7 @@ class TaskModel extends TaskEntity {
       case 'IN_PROGRESS': return TaskStatus.inProgress;
       case 'DONE': return TaskStatus.done;
       case 'OPEN':
-      default: return TaskStatus.todo;
+      default: return TaskStatus.open;
     }
   }
 
@@ -68,9 +68,8 @@ class TaskModel extends TaskEntity {
     switch (status) {
       case TaskStatus.inProgress: return 'IN_PROGRESS';
       case TaskStatus.done: return 'DONE';
-      case TaskStatus.todo: return 'OPEN';
-    }
-  }
+case TaskStatus.open: return 'OPEN'; // ✅ التعديل الذهبي لحل مشكلة 400    }
+  }}
 
   static TaskPriority _parsePriority(String? priorityText) {
     switch (priorityText?.toUpperCase()) {
