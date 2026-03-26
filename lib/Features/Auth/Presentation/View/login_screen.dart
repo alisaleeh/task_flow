@@ -4,7 +4,9 @@ import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
+import 'package:taskflow/Core/Utils/app_page_transitions.dart';
 import 'package:taskflow/Core/Utils/context_extensions.dart';
+import 'package:taskflow/Core/Utils/service_locator.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/app_logo.dart';
@@ -12,6 +14,8 @@ import 'package:taskflow/Features/Auth/Presentation/View/Widgets/bottom_action_t
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/custom_text_field.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/header_texts.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/primary_button.dart';
+import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
+import 'package:taskflow/Features/Home/Presentation/View/main_layout_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key}); // تم إضافة const
@@ -50,7 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 break;
               case LoginSuccess():
                 CustomSnackBar.showSuccess(context, 'Login successful!');
-                Navigator.pushReplacementNamed(context, AppRoutes.mainLayout); // نستخدم pushReplacement لمنع الرجوع لصفحة الدخول
+                context.pushAndRemoveUntilRoute(
+                  AppTransitions.fadeIn(
+                    BlocProvider(
+                      // 👈 اسحب الكيوبت من الـ GetIt (Dependency Injection)
+                      create: (context) => getIt<TaskCubit>(),
+                      child: const MainLayoutScreen(),
+                    ),
+                  ),
+                );
                 break;
             }
           },
@@ -107,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           AppSpacing.gapV32,
-                          
+
                           if (state is LoginLoading)
                             const Center(
                               child: CircularProgressIndicator(

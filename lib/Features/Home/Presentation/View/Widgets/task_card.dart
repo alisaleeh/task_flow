@@ -140,8 +140,10 @@ class TaskCard extends StatelessWidget {
                         ),
                         AppSpacing.gapH4,
                         Text(
+                          // ignore: unnecessary_null_comparison
                           task.dueDate != null
-                              ? '${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')} ${task.dueDate!.hour >= 12 ? 'PM' : 'AM'}'
+                              ? '${task.dueDate.hour}:${task.dueDate.minute.toString().padLeft(2, '0')} ${task.dueDate.hour >= 12 ? 'PM' : 'AM'}'
+                              // ignore: dead_code
                               : 'No due time',
                           style: AppTextStyles.font12RegularLight,
                         ),

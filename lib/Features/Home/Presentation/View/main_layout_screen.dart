@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
-import 'package:taskflow/Core/Constants/app_routes.dart';
+import 'package:taskflow/Core/Utils/app_page_transitions.dart';
 import 'package:taskflow/Core/Utils/context_extensions.dart';
+import 'package:taskflow/Core/Utils/service_locator.dart';
 import 'package:taskflow/Features/Calendar/Presentation/View/calendar_screen.dart';
-import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 
 // استيراد شاشاتك الثلاث
 import 'package:taskflow/Features/Home/Presentation/View/home_screen.dart';
@@ -13,6 +13,8 @@ import 'package:taskflow/Features/Profile/Presentation/View/profile_screen.dart'
 
 // استيراد الـ NavBar
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/glass_bottom_nav_bar.dart';
+import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
+import 'package:taskflow/Features/Task/Presentation/View/create_task_screen.dart';
 
 class MainLayoutScreen extends StatefulWidget {
   const MainLayoutScreen({super.key});
@@ -35,12 +37,9 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true, // ضروري جداً لكي يعمل تأثير الزجاج
-      // 👈 السحر الهندسي هنا: IndexedStack تحتفظ بحالة الشاشات (State Preservation)
-      // يعني لو عملت Scroll في الـ Home ورحلت للـ Profile ورجعت، ستجد الـ Scroll مكانه!
+      extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _screens),
 
-      // 👈 الزر العائم (FAB) تم نقله هنا ليكون ثابتاً فوق كل الشاشات
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton:
           _currentIndex !=
@@ -48,13 +47,19 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
           ? FloatingActionButton(
               onPressed: () async {
                 // 1. نفتح الشاشة وننتظر النتيجة
-                final result = await Navigator.pushNamed(
-                  context,
-                  AppRoutes.createTask,
+                final result = await context.pushRoute(
+                  AppTransitions.scale(
+                    BlocProvider(
+                      create: (context) => getIt<CreateTaskCubit>(),
+                      child: const CreateTaskScreen(),
+                    ),
+                  ),
                 );
-                // 2. إذا عادت الشاشة بـ true (يعني تم إنشاء مهمة بنجاح)
+
+                // 2. فحص النتيجة بعد إغلاق شاشة الإضافة (لعمل Refresh للمهام)
                 if (result == true) {
-                  // 3. نطلب من الـ Cubit تحديث القائمة!
+                  // نفترض أنك تمرر true عند نجاح الإضافة
+                  // 💡 سحر! الهاتف يهتز بنعومة تحديثاً للبيانات
                   context.taskCubit.fetchalltasks();
                 }
               },

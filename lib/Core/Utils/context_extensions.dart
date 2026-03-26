@@ -37,7 +37,19 @@ extension ContextHelper on BuildContext {
       Navigator.of(this).pop(result);
     }
   }
+// الانتقال مع مسح الشاشات السابقة باستخدام (Route مخصص / حركة سينمائية)
+  void pushAndRemoveUntilRoute(Route route) {
+    Navigator.of(this).pushAndRemoveUntil(route, (route) => false);
+  }
 
+  // الانتقال مع استبدال الشاشة الحالية باستخدام (Route مخصص / حركة سينمائية)
+  void pushReplacementRoute(Route route) {
+    Navigator.of(this).pushReplacement(route);
+  }
+  // الانتقال لشاشة مع حركة سينمائية (وانتظار النتيجة)
+  Future<dynamic> pushRoute(Route route) {
+    return Navigator.of(this).push(route);
+  }
   // =========================================
   // 2️⃣ سحر المقاسات (MediaQuery) 📏
   // =========================================
