@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/register_cubit/register_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/already_have_account_text.dart';
@@ -113,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       FocusScope.of(context).unfocus();
-                                      context.read<RegisterCubit>().register(
+                                      context.registerCubit.register(
                                         fullnamecontroller.text.trim(),
                                         emailcontroller.text.trim(),
                                         passwordcontroller.text.trim(),

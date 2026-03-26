@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
+import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Core/Widgets/custom_app_bar.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
@@ -153,7 +154,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       dueDate: DateTime.now(),
     );
 
-    context.read<CreateTaskCubit>().createTask(newTask);
+    context.createTaskCubit.createTask(newTask);
   }
 
   // دوال التحويل من نصوص الواجهة إلى Enums الـ Domain

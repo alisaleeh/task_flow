@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
+import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Features/Calendar/Presentation/View/calendar_screen.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 
@@ -54,7 +55,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
                 // 2. إذا عادت الشاشة بـ true (يعني تم إنشاء مهمة بنجاح)
                 if (result == true) {
                   // 3. نطلب من الـ Cubit تحديث القائمة!
-                  context.read<TaskCubit>().fetchalltasks();
+                  context.taskCubit.fetchalltasks();
                 }
               },
               backgroundColor: AppColors.primaryOrange,

@@ -5,9 +5,8 @@ import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
-
+import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart'; 
-
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/tasks_error_widget.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/tasks_loading_widget.dart';
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<TaskCubit>().fetchalltasks();
+      context.taskCubit.fetchalltasks();
     });
   }
 
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return RefreshIndicator(
               color: AppColors.primaryOrange,
               onRefresh: () async {
-                await context.read<TaskCubit>().fetchalltasks();
+                await context.taskCubit.fetchalltasks();
               },
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(), 
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: TasksErrorWidget(
                         errorMessage: state.errorMessage,
                         onRetry: () {
-                          context.read<TaskCubit>().fetchalltasks();
+                          context.taskCubit.fetchalltasks();
                         },
                       ),
                     )
@@ -186,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(dialogContext).pop(); // 1. إغلاق الـ Dialog أولاً
 
                 // 2. استدعاء دالة الحذف من الكيوبت باستخدام الـ context الأصلي للشاشة
-                context.read<TaskCubit>().deleteTask(taskId);
+                context.taskCubit.deleteTask(taskId);
               },
               child: const Text(
                 'delete',

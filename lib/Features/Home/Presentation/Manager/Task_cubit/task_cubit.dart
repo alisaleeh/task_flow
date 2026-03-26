@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/delete_task_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
-
 part 'task_state.dart';
 
 class TaskCubit extends Cubit<TaskState> {

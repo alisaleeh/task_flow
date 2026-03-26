@@ -4,6 +4,7 @@ import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_routes.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
+import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Auth/Presentation/Manager/login_cubit/login_cubit.dart';
 import 'package:taskflow/Features/Auth/Presentation/View/Widgets/app_logo.dart';
@@ -119,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   FocusScope.of(context).unfocus();
-                                  context.read<LoginCubit>().login(
+                                  context.logincubit.login(
                                     emailcontroller.text.trim(),
                                     passwordcontroller.text.trim(),
                                   );
