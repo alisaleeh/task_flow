@@ -78,7 +78,7 @@ class TaskCard extends StatelessWidget {
   }
 
   Widget _buildCardContent() {
-    final bgColor = task.isCompleted
+    final bgColor = task.status==TaskStatus.done
         ? AppColors.primaryOrange.withOpacity(0.05)
         : Colors.white;
 
@@ -187,7 +187,7 @@ class TaskCard extends StatelessWidget {
 
   // ... (دالة _buildStatusBadge تبقى كما هي بدون تغيير)
   Widget _buildStatusBadge() {
-    final isInProgress = task.status == 'In Progress';
+    final isInProgress = task.status == TaskStatus.inProgress;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(

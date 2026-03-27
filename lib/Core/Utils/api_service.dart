@@ -32,14 +32,13 @@ class ApiService {
     return headers;
   }
 
-  // ✅ دالة GET
+  // ✅ 1. دالة GET
   Future<dynamic> getData({
     required String endpoint,
     Map<String, dynamic>? queryParameters,
-    // تم حذف تمرير التوكن اليدوي من هنا
   }) async {
     try {
-      final headers = await _getHeaders(); // 👈 استدعاء السحر هنا
+      final headers = await _getHeaders(); 
 
       final response = await dio.get(
         "$baseURL$endpoint",
@@ -57,7 +56,7 @@ class ApiService {
     }
   }
 
-  // ✅ دالة POST
+  // ✅ 2. دالة POST
   Future<dynamic> postData({
     required String endpoint,
     required dynamic data, 
@@ -84,7 +83,7 @@ class ApiService {
     }
   }
 
-  // ✅ دالة PUT
+  // ✅ 3. دالة PUT (استبدال كلي)
   Future<dynamic> putData({
     required String endpoint,
     required dynamic data,
@@ -109,10 +108,35 @@ class ApiService {
     }
   }
 
-  // ✅ دالة DELETE
+  // ✅ 4. دالة PATCH (تحديث جزئي) 👈 تمت الإضافة هنا!
+  Future<dynamic> patchData({
+    required String endpoint,
+    required dynamic data,
+    bool isFormData = false,
+  }) async {
+    try {
+      final headers = await _getHeaders(isFormData: isFormData);
+
+      final response = await dio.patch(
+        "$baseURL$endpoint",
+        data: data,
+        options: Options(
+          headers: headers,
+          receiveTimeout: const Duration(seconds: 60),
+          sendTimeout: const Duration(seconds: 60),
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      log('API PATCH error: $e');
+      rethrow;
+    }
+  }
+
+  // ✅ 5. دالة DELETE
   Future<dynamic> deleteData({
     required String endpoint,
-    dynamic data, // أضفنا data لأن الـ DELETE أحياناً يقبل Body
+    dynamic data, 
   }) async {
     try {
       final headers = await _getHeaders();

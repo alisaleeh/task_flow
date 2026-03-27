@@ -19,6 +19,7 @@ import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/delete_task_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
+import 'package:taskflow/Features/Home/Domain/Use_Cases/update_task_use_case.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source.dart';
 // --- Task (Create) Imports ---
@@ -92,8 +93,12 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<DeleteTaskUseCase>(
     () => DeleteTaskUseCase(homeRepo: getIt()),
   );
+  getIt.registerLazySingleton<UpdateTaskUseCase>(
+    () => UpdateTaskUseCase(homeRepo: getIt()),
+  );
 
-  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt(), getIt()));
+
+  getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt(), getIt(), getIt()));
 
   // ==========================================
   // 4. Task Feature (Create Task) 👈 الإضافة الجديدة هنا
@@ -110,4 +115,5 @@ Future<void> setupServiceLocator() async {
   );
 
   getIt.registerFactory<CreateTaskCubit>(() => CreateTaskCubit(getIt()));
+  
 }

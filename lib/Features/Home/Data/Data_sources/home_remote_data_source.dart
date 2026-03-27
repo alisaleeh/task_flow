@@ -7,6 +7,7 @@ abstract class HomeRemoteDataSource {
   Future<List<TaskEntity>> fetchAllTasks();
   Future<TaskSummaryEntity> fetchTasksSummary();
   Future<void> deleteTask(String taskId);
+  Future<void> updateTask(String taskid, String? status, String? priority);
 }
 
 class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
@@ -32,9 +33,22 @@ class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
     // TODO: implement fetchTasksSummary
     throw UnimplementedError();
   }
-  
+
   @override
-  Future<void> deleteTask(String taskId)async {
-   return  await apiService.deleteData(endpoint: "tasks/$taskId");
+  Future<void> deleteTask(String taskId) async {
+    return await apiService.deleteData(endpoint: "tasks/$taskId");
+  }
+
+  @override
+  Future<void> updateTask(String taskid, String? status, String? priority) {
+   final Map<String, dynamic> data = {};
+    if (status != null) data['status'] = status;
+    if (priority != null) data['priority'] = priority;
+
+    return apiService.patchData(
+      // 2. 🐛 إصلاح الـ 404: حرف الـ 's' هو الذي كان يعطل العملية بأكملها!
+      endpoint: "tasks/$taskid", // 👈 tasks بدلاً من task
+      data: data,
+    );
   }
 }

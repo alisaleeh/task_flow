@@ -7,4 +7,5 @@ abstract class HomeRepo{
 Future<Either<Failure,List<TaskEntity>>> getAllTasks();
 Future<Either<Failure,TaskSummaryEntity>> getTaskSummary();
 Future<Either<Failure,void>> deleteTask(String taskId);
+Future<Either<Failure,void>> updateTask(String taskId,String? status,String? priority);
 }
