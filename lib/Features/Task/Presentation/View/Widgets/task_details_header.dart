@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
 class TaskDetailsHeader extends StatelessWidget {
-  const TaskDetailsHeader({super.key});
+  const TaskDetailsHeader({super.key, required this.title, required this.status});
+  final String title;
+  final TaskStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +17,7 @@ class TaskDetailsHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Design Homepage Hero Section',
+            title,
             style: TextStyle(
               fontSize: 28.sp, 
               fontWeight: FontWeight.w900, 
@@ -42,7 +45,7 @@ class TaskDetailsHeader extends StatelessWidget {
           Icon(Icons.coffee_outlined, color: AppColors.primaryOrange, size: 16.sp),
           AppSpacing.gapH8,
           Text(
-            'In Progress',
+            status == TaskStatus.done ? 'Completed' : 'In Progress',
             style: TextStyle(
               fontSize: 12.sp, 
               fontWeight: FontWeight.bold, 

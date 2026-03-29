@@ -25,4 +25,21 @@ final class CreateTaskError extends CreateTaskState {
   @override
   List<Object> get props => [message];
 }
+final class CreateSubTaskSuccess extends CreateTaskState {
+  final SubtaskEntity createdSubtask;
+
+  const CreateSubTaskSuccess(this.createdSubtask);
+
+  @override
+  List<Object> get props => [createdSubtask];
+}
+final class CreateSubTaskError extends CreateTaskState {
+  final String message;
+
+  const CreateSubTaskError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+final class CreateSubTaskLoading extends CreateTaskState {}
 

@@ -3,13 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
-
-// تأكد من مسار الـ SectionTitle لديك
 import 'package:taskflow/Features/Task/Presentation/View/Widgets/section_title.dart';
 
 class TaskDetailsDescription extends StatelessWidget {
-  const TaskDetailsDescription({super.key});
-
+  const TaskDetailsDescription({super.key, required this.description});
+final String? description ;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,7 +18,7 @@ class TaskDetailsDescription extends StatelessWidget {
           const SectionTitle(title: 'DESCRIPTION'),
           AppSpacing.gapV12,
           Text(
-            'Create a high-fidelity mockup for the hero section of the landing page. Focus on the main value proposition and a strong CTA to drive user engagement.',
+            description ?? 'No description available.' ,
             style: AppTextStyles.font14RegularLight.copyWith(
               height: 1.6, 
               fontSize: 15.sp, 

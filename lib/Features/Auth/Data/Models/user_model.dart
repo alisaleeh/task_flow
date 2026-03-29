@@ -4,7 +4,8 @@ class UserModel extends UserEntity {
   const UserModel({
     required super.id,
     required super.email,
-    required super.fullName,
+    required super.firstname,
+    required super.lastname,
     super.profileImageUrl,
   });
 
@@ -16,8 +17,10 @@ class UserModel extends UserEntity {
       // 2. لاحظ علامة الاستفهام الملاصقة للـ String? 
       email: json['email'] as String? ?? "",
       
-      // 3. غالباً السيرفرات ترسل الاسم بصيغة name أو full_name، فوضعت لك احتياطياً للبحث عنهم!
-      fullName: (json['fullName'] ?? json['name'] ?? json['full_name']) as String? ?? 'New User', 
+      // 3. إصلاح علامة الاستفهام هنا أيضاً، مع توقع أسماء أخرى من السيرفر
+      firstname: json['firstname'] as String? ?? "",
+      lastname: json['lastname'] as String? ?? "",
+      
       
       // 4. إصلاح علامة الاستفهام هنا أيضاً، مع توقع أسماء أخرى من السيرفر
       profileImageUrl: (json['profileImageUrl'] ?? json['image'] ?? json['profile_image']) as String? ?? "",
@@ -28,7 +31,8 @@ class UserModel extends UserEntity {
     return {
       'id': id,
       'email': email,
-      'fullName': fullName,
+      'firstname': firstname,
+      'lastname': lastname,
       'profileImageUrl': profileImageUrl,
     };
   }

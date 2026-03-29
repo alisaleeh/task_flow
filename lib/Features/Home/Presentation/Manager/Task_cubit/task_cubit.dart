@@ -1,9 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:taskflow/Core/Utils/service_locator.dart';
+import 'package:taskflow/Features/Auth/Data/Data_sources/local_data_source.dart';
+import 'package:taskflow/Features/Home/Domain/Entities/task_summary_entity.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/delete_task_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/update_task_use_case.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
+
 part 'task_state.dart';
 
 class TaskCubit extends Cubit<TaskState> {
@@ -12,57 +16,120 @@ class TaskCubit extends Cubit<TaskState> {
     this.deleteTaskUseCase,
     this.updateTaskUseCase,
   ) : super(TaskInitial());
+
   final GetAllTasksUseCase getAllTasksUseCase;
   final DeleteTaskUseCase deleteTaskUseCase;
   final UpdateTaskUseCase updateTaskUseCase;
+  String firstName = '';
+  String lastName = '';
+
+  // 🚀 2. دالة جلب بيانات المستخدم من الكاش
+  Future<void> fetchUserData() async {
+    try {
+      // نصل للـ LocalDataSource مباشرة عبر getIt
+      final localAuth = getIt<AuthLocalDataSource>();
+
+      firstName = await localAuth.getCachedFirstName() ?? 'ضيف';
+      lastName = await localAuth.getCachedLastName() ?? '';
+
+      // إذا أردت تحديث الشاشة بعد جلب الاسم يمكنك إصدار حالة (اختياري)
+      // emit(TaskUserDataLoaded());
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  // ==========================================
+  // 1. جلب المهام (نجلب الملخص من السيرفر مباشرة)
+  // ==========================================
   Future<void> fetchalltasks() async {
     try {
       emit(TaskLoading());
       var result = await getAllTasksUseCase.call();
+
       result.fold(
         (failure) => emit(TaskFailure(errorMessage: failure.errorMessage)),
-        (tasks) => emit(TaskSuccess(task: tasks)),
+        (responseEntity) {
+          // 🚀 السيرفر أعطانا المهام والملخص الجاهز، نمررهم للشاشة فوراً
+          emit(
+            TaskSuccess(
+              task: responseEntity.tasks,
+              responseEntity.summary, // 👈 استخدم اسم المتغير الصحيح لديك
+            ),
+          );
+        },
       );
     } catch (e) {
-      emit(
-        TaskFailure(errorMessage: "An error occurred while fetching tasks."),
-      );
+      emit(TaskFailure(errorMessage: "An error occurred"));
     }
   }
 
+  // ==========================================
+  // 2. حذف المهمة (Optimistic Delete with Delta)
+  // ==========================================
   Future<void> deleteTask(String taskId) async {
-    try {
-      emit(TaskLoading());
+    if (state is TaskSuccess) {
+      final currentState = state as TaskSuccess;
+
+      // 🛡️ النسخة الاحتياطية
+      final backupTasks = List<TaskEntity>.from(currentState.task);
+      final backupSummary = currentState.taskSummaryEntity;
+
+      // ⚡️ النسخة المتفائلة
+      final optimisticTasks = List<TaskEntity>.from(currentState.task);
+
+      // 🔍 نبحث عن المهمة قبل حذفها لنعرف هل كانت مكتملة أم لا
+      final taskToDeleteIndex = optimisticTasks.indexWhere(
+        (t) => t.id == taskId,
+      );
+      if (taskToDeleteIndex == -1) return; // تأمين إضافي
+
+      final wasDone =
+          optimisticTasks[taskToDeleteIndex].status == TaskStatus.done;
+
+      // نحذفها محلياً
+      optimisticTasks.removeAt(taskToDeleteIndex);
+
+      // 🧮 نحسب الملخص الجديد ذكياً (بدون قراءة القائمة كلها)
+      final newSummary = _updateSummaryOnDelete(backupSummary!, wasDone);
+
+      // 🚀 نصدر القائمة والملخص الجديد فوراً
+      emit(TaskSuccess(task: optimisticTasks, newSummary));
+
+      // 🌐 نرسل للسيرفر بصمت
       var result = await deleteTaskUseCase.call(taskId);
+
       result.fold(
-        (failure) => emit(TaskFailure(errorMessage: failure.errorMessage)),
+        (failure) {
+          emit(DeleteTaskError(errormessage: failure.errorMessage));
+          // 🔄 تراجع
+          emit(TaskSuccess(task: backupTasks, backupSummary));
+        },
         (_) {
           emit(DeleteTaskSuccess());
-          fetchalltasks();
-        }, // بعد الحذف، نعيد جلب المهام لتحديث الواجهة
-      );
-    } catch (e) {
-      emit(
-        TaskFailure(errorMessage: "An error occurred while deleting the task."),
+          emit(TaskSuccess(task: optimisticTasks, newSummary));
+        },
       );
     }
   }
 
+  // ==========================================
+  // 3. تعديل المهمة (Optimistic Update with Delta)
+  // ==========================================
   Future<void> updateTask({
     required String taskId,
     String? status,
     String? priority,
   }) async {
-    // 1. نتأكد أن الشاشة حالياً تعرض البيانات بنجاح
     if (state is TaskSuccess) {
       final currentState = state as TaskSuccess;
 
-      // 🛡️ نأخذ "نسخة احتياطية" من القائمة القديمة قبل التعديل (تحسباً لأي خطأ)
-      final List<TaskEntity> backupTasks = List.from(currentState.task);
+      // 🛡️ النسخة الاحتياطية
+      final backupTasks = List<TaskEntity>.from(currentState.task);
+      final backupSummary = currentState.taskSummaryEntity;
 
-      // ⚡️ نأخذ "النسخة المتفائلة" التي سنعدلها ونعرضها للمستخدم فوراً
-      final List<TaskEntity> optimisticTasks = List.from(currentState.task);
-
+      // ⚡️ النسخة المتفائلة
+      final optimisticTasks = List<TaskEntity>.from(currentState.task);
       final taskIndex = optimisticTasks.indexWhere((t) => t.id == taskId);
 
       if (taskIndex != -1) {
@@ -75,43 +142,86 @@ class TaskCubit extends Cubit<TaskState> {
           subtitle: oldTask.subtitle,
           priority: priority != null
               ? TaskPriority.values.firstWhere(
-                  (e) => e.toString().split('.').last == priority,
+                  (e) => e.name.toUpperCase() == priority.toUpperCase(),
+                  orElse: () => oldTask.priority,
                 )
               : oldTask.priority,
           status: status != null
               ? TaskStatus.values.firstWhere(
-                  // نقارن بحروف كبيرة دائماً لضمان التطابق 100%
-                  (e) =>
-                      e.toString().split('.').last.toUpperCase() ==
-                      status.toUpperCase(),
-                  // 🛡️ شبكة الأمان: إذا أرسلنا كلمة غريبة بالخطأ، لا توقف التطبيق، بل احتفظ بالحالة القديمة
+                  (e) => e.name.toUpperCase() == status.toUpperCase(),
                   orElse: () => oldTask.status,
                 )
               : oldTask.status,
           dueDate: oldTask.dueDate,
         );
 
-        // 🚀 إصدار حالة النجاح فوراً لتحديث الشاشة (المستخدم سيشعر أن التطبيق صاروخي)
-        emit(TaskSuccess(task: optimisticTasks));
+        // 🧮 حساب الملخص الجديد ذكياً
+        // نقارن هل الحالة الجديدة التي أرسلناها هي DONE؟
+        final isNowDone = status?.toUpperCase() == 'DONE';
+        final newSummary = _updateSummaryOnToggle(backupSummary!, isNowDone);
+
+        // 🚀 إصدار القائمة المحدثة + الملخص الجديد
+        emit(TaskSuccess(task: optimisticTasks, newSummary));
       }
 
-      // 🌐 إرسال الطلب للسيرفر في الخلفية بصمت تام
+      // 🌐 نكلم السيرفر بصمت
       var result = await updateTaskUseCase.call(taskId, status, priority);
 
       result.fold(
         (failure) {
-          // ❌ السيرفر رفض التعديل أو انقطع الإنترنت!
-          // 1. نصدر حالة الخطأ لكي يظهر السناك بار الأحمر
           emit(UpdateTaskError(failure.errorMessage));
-
-          // 2. 🔄 "نتراجع" عن التحديث ونعيد النسخة الاحتياطية للشاشة
-          emit(TaskSuccess(task: backupTasks));
+          // 🔄 تراجع
+          emit(TaskSuccess(task: backupTasks, backupSummary));
         },
         (_) {
-          // ✅ السيرفر قَبِل التعديل!
-          // لا نفعل أي شيء إطلاقاً! لأن الشاشة محدثة بالفعل.
+          /* ✅ نجاح صامت */
         },
       );
     }
+  }
+
+  // ==========================================
+  // 🧮 دوال الرياضيات الذكية (Delta Updates)
+  // ==========================================
+  TaskSummaryEntity _updateSummaryOnDelete(
+    TaskSummaryEntity currentSummary,
+    bool wasDone,
+  ) {
+    int newTotal = currentSummary.totalTasksToday - 1;
+    if (newTotal < 0) newTotal = 0;
+
+    int newCompleted = currentSummary.completedTasks - (wasDone ? 1 : 0);
+    if (newCompleted < 0) newCompleted = 0;
+
+    double newPercentage = newTotal == 0
+        ? 0.0
+        : (newCompleted / newTotal) * 100;
+
+    return TaskSummaryEntity(
+      totalTasksToday: newTotal,
+      completedTasks: newCompleted,
+      completionPercentage: newPercentage,
+    );
+  }
+
+  TaskSummaryEntity _updateSummaryOnToggle(
+    TaskSummaryEntity currentSummary,
+    bool isNowDone,
+  ) {
+    int newCompleted = currentSummary.completedTasks + (isNowDone ? 1 : -1);
+
+    if (newCompleted < 0) newCompleted = 0;
+    if (newCompleted > currentSummary.totalTasksToday)
+      newCompleted = currentSummary.totalTasksToday;
+
+    double newPercentage = currentSummary.totalTasksToday == 0
+        ? 0.0
+        : (newCompleted / currentSummary.totalTasksToday) * 100;
+
+    return TaskSummaryEntity(
+      totalTasksToday: currentSummary.totalTasksToday,
+      completedTasks: newCompleted,
+      completionPercentage: newPercentage,
+    );
   }
 }

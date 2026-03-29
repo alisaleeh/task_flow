@@ -6,11 +6,15 @@ abstract class AuthLocalDataSource {
   /// حفظ بيانات المستخدم والتوكن عند النجاح في تسجيل الدخول
   Future<void> cacheUser(UserModel user, String token);
 
-  /// جلب بيانات المستخدم المخزنة (نحتاجها في الـ Splash Screen)
+  /// جلب بيانات المستخدم المخزنة بالكامل
   Future<UserModel?> getCachedUser();
 
-  /// جلب التوكن فقط (نحتاجه لإرساله مع الـ Headers في الـ ApiService)
+  /// جلب التوكن فقط
   Future<String?> getCachedToken();
+
+  // 🚀 إضافات جديدة لجلب الاسم بسرعة
+  Future<String?> getCachedFirstName();
+  Future<String?> getCachedLastName();
 
   /// مسح البيانات عند تسجيل الخروج
   Future<void> clearCache();
@@ -22,17 +26,24 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   // مفاتيح التخزين (Keys)
   static const String _userKey = 'CACHED_USER';
   static const String _tokenKey = 'AUTH_TOKEN';
+  // 🚀 مفاتيح جديدة للاسم
+  static const String _firstNameKey = 'FIRST_NAME';
+  static const String _lastNameKey = 'LAST_NAME';
 
   AuthLocalDataSourceImpl({required this.sharedPreferences});
 
   @override
   Future<void> cacheUser(UserModel user, String token) async {
-    // نحول الـ Model إلى Map ثم إلى String باستخدام json.encode
     final userJson = json.encode(user.toJson());
 
+    // 🚀 نستخدم Future.wait لتنفيذ كل عمليات الحفظ في نفس اللحظة (أداء أسرع)
     await Future.wait([
       sharedPreferences.setString(_userKey, userJson),
       sharedPreferences.setString(_tokenKey, token),
+      // تأكد أن UserModel يحتوي على خصائص firstName و lastName
+      // استخدمنا الإسناد الافتراضي '' لتجنب حفظ null إذا كان الاسم غير متوفر
+      sharedPreferences.setString(_firstNameKey, user.firstname),
+      sharedPreferences.setString(_lastNameKey, user.lastname),
     ]);
   }
 
@@ -40,7 +51,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<UserModel?> getCachedUser() async {
     final userString = sharedPreferences.getString(_userKey);
     if (userString != null) {
-      // نحول النص العائد إلى Map ثم نستخدم factory UserModel.fromJson
       return UserModel.fromJson(json.decode(userString));
     }
     return null;
@@ -51,9 +61,25 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     return sharedPreferences.getString(_tokenKey);
   }
 
+  // 🚀 دوال الجلب السريعة للاسم
+  @override
+  Future<String?> getCachedFirstName() async {
+    return sharedPreferences.getString(_firstNameKey);
+  }
+
+  @override
+  Future<String?> getCachedLastName() async {
+    return sharedPreferences.getString(_lastNameKey);
+  }
+
   @override
   Future<void> clearCache() async {
-    await sharedPreferences.remove(_userKey);
-    await sharedPreferences.remove(_tokenKey);
+    // 🚀 تنظيف شامل لكل المفاتيح دفعة واحدة
+    await Future.wait([
+      sharedPreferences.remove(_userKey),
+      sharedPreferences.remove(_tokenKey),
+      sharedPreferences.remove(_firstNameKey),
+      sharedPreferences.remove(_lastNameKey),
+    ]);
   }
 }

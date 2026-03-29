@@ -6,7 +6,8 @@ abstract class AuthRemoteDataSource {
   Future<(UserModel, String)> login(String email, String password);
 
   Future<(UserModel, String)> register(
-    String fullName,
+    String firstname,
+    String lastname,
     String email,
     String password,
   );
@@ -38,13 +39,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<(UserModel, String)> register(
-    String fullName,
+    String firstname,
+    String lastname,
     String email,
     String password,
   ) async {
     final response = await _apiService.postData(
       endpoint: "auth/register",
-      data: {"fullName": fullName, "email": email, "password": password},
+      data: {"firstname": firstname, "lastname": lastname, "email": email, "password": password},
     );
 
     // 👈 تطبيق نفس المنطق الصحيح في شاشة التسجيل (لأن السيرفر سيرد بنفس الهيكلة غالباً)

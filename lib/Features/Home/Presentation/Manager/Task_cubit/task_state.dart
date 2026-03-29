@@ -9,8 +9,9 @@ final class TaskLoading extends TaskState {}
 
 final class TaskSuccess extends TaskState {
   final List<TaskEntity> task;
+  final TaskSummaryEntity? taskSummaryEntity;
 
-  TaskSuccess({required this.task});
+  TaskSuccess(this.taskSummaryEntity, {required this.task});
 }
 
 final class TaskFailure extends TaskState {
@@ -33,3 +34,4 @@ final class UpdateTaskError extends TaskState {
   final String errormessage;
   UpdateTaskError(this.errormessage);
 }
+

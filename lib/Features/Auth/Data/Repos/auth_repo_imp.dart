@@ -40,12 +40,13 @@ class AuthRepoImp extends AuthRepo {
 
   @override
   Future<Either<Failure, UserEntity>> register(
-    String fullName,
+    String firstName,
+    String lastName,
     String email,
     String password,
   ) async {
     try {
-      final result = await remoteDataSource.register(fullName, email, password);
+      final result = await remoteDataSource.register(firstName, lastName, email, password);
       final UserEntity userEntity = result.$1;
       final String token = result.$2;
       await localDataSource.cacheUser(result.$1, token);

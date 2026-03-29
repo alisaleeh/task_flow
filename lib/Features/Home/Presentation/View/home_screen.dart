@@ -4,7 +4,9 @@ import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
+import 'package:taskflow/Features/Home/Domain/Entities/task_summary_entity.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
+import 'package:taskflow/Features/Home/Presentation/View/Widgets/home_header_loading.dart';
 import 'Widgets/home_header.dart';
 import 'Widgets/task_filter_row.dart';
 import 'Widgets/tasks_error_widget.dart';
@@ -41,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  _buildTopSection(),
+                  // 👈 نمرر الـ state مباشرة للقسم العلوي
+                  _buildTopSection(state),
                   _buildMainContent(state),
                   SliverToBoxAdapter(child: AppSpacing.gapV48),
                 ],
@@ -53,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 1. المستمع للحالات (المنفصل للترتيب)
+  // 1. المستمع للحالات (الأفعال الجانبية مثل الأخطاء والنجاحات)
   void _handleBlocListener(BuildContext context, TaskState state) {
     if (state is DeleteTaskSuccess) {
       CustomSnackBar.showSuccess(context, 'Task deleted successfully!');
@@ -65,14 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // 2. القسم العلوي (الهيدر والفلاتر)
-  Widget _buildTopSection() {
+  Widget _buildTopSection(TaskState state) {
     return SliverToBoxAdapter(
       child: Column(
         children: [
           AppSpacing.gapV24,
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: HomeHeader(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            // 👈 لا حاجة لـ BlocBuilder هنا، نستخدم دالة مساعدة
+            child: _buildHeaderLogic(state),
           ),
           AppSpacing.gapV24,
           const TaskFilterRow(),
@@ -82,10 +86,41 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // 🪄 منطق عرض الهيدر بناءً على حالة الشاشة الكلية
+  Widget _buildHeaderLogic(TaskState state) {
+    if (state is TaskLoading) {
+      return const HomeHeaderLoading(); // 👈 الشيمر الأنيق أثناء التحميل
+    }
+
+    if (state is TaskSuccess) {
+      // 🚀 نجلب الملخص من الحالة المدمجة! (تأكد أن TaskSuccess تحتوي على summary)
+      return HomeHeader(
+        summaryEntity:
+            state.taskSummaryEntity ??
+            TaskSummaryEntity(
+              totalTasksToday: 0,
+              completedTasks: 0,
+              completionPercentage: 0,
+            ),
+      );
+    }
+
+    // Fallback: حالة الفشل أو قبل بدء التحميل
+    return HomeHeader(
+      summaryEntity: TaskSummaryEntity(
+        totalTasksToday: 0,
+        completedTasks: 0,
+        completionPercentage: 0,
+      ),
+    );
+  }
+
   // 3. المحتوى المتغير بناءً على حالة الكيوبت (Clean Logic!)
   Widget _buildMainContent(TaskState state) {
     if (state is TaskLoading) {
-      return const SliverFillRemaining(child: Center(child: TasksLoadingWidget()));
+      return const SliverFillRemaining(
+        child: Center(child: TasksLoadingWidget()),
+      );
     } else if (state is TaskFailure) {
       return SliverFillRemaining(
         child: TasksErrorWidget(
@@ -99,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       return TasksSliverList(tasks: state.task);
     }
-    
+
     // Fallback حالة الصفر
     return const SliverToBoxAdapter(child: SizedBox.shrink());
   }

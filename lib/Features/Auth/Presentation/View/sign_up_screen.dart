@@ -21,7 +21,8 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   // 2. تعريف المتغيرات خارج دالة الـ build
-  final TextEditingController fullnamecontroller = TextEditingController();
+  final TextEditingController firstnamecontroller = TextEditingController();
+  final TextEditingController lastnamecontroller = TextEditingController();
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
 
@@ -31,7 +32,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   // 4. السحر الهندسي لمنع تسريب الذاكرة (Memory Leak)
   @override
   void dispose() {
-    fullnamecontroller.dispose();
+    firstnamecontroller.dispose();
+    lastnamecontroller.dispose();
     emailcontroller.dispose();
     passwordcontroller.dispose();
     super.dispose();
@@ -77,13 +79,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           AppSpacing.gapV40,
 
                           CustomTextField(
-                            label: 'Full Name',
-                            hintText: 'Full Name',
+                            label: 'First Name',
+                            hintText: 'First Name',
                             keyboardType: TextInputType.name,
                             textinputaction: TextInputAction.next,
-                            controller: fullnamecontroller,
+                            controller: firstnamecontroller,
                           ),
                           AppSpacing.gapV16,
+                          CustomTextField(
+                            label: 'Last Name',
+                            hintText: 'Last Name',
+                            keyboardType: TextInputType.name,
+                            textinputaction: TextInputAction.next,
+                            controller: lastnamecontroller,
+                          ),
+                          AppSpacing.gapV16,
+
                           CustomTextField(
                             label: 'Email Address',
                             hintText: 'Email Address',
@@ -115,7 +126,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       FocusScope.of(context).unfocus();
                                       context.registerCubit.register(
-                                        fullnamecontroller.text.trim(),
+                                        firstnamecontroller.text.trim(),
+                                        lastnamecontroller.text.trim(),
                                         emailcontroller.text.trim(),
                                         passwordcontroller.text.trim(),
                                       );

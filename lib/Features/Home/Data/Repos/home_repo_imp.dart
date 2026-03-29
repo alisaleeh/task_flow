@@ -4,6 +4,7 @@ import 'package:taskflow/Features/Home/Data/Data_sources/home_local_data_source.
 import 'package:taskflow/Features/Home/Data/Data_sources/home_remote_data_source.dart';
 import 'package:taskflow/Features/Home/Data/Models/task_model.dart';
 import 'package:taskflow/Features/Home/Domain/Entities/task_summary_entity.dart';
+import 'package:taskflow/Features/Home/Domain/Entities/tasks_response_entity.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
@@ -24,24 +25,47 @@ class HomeRepoImp extends HomeRepo {
   HomeRepoImp({required this.remoteDataSource, required this.localDataSource});
 
   @override
-  Future<Either<Failure, List<TaskEntity>>> getAllTasks() async {
+  @override
+  Future<Either<Failure, TasksResponseEntity>> getAllTasks() async {
     try {
-      final remoteTasks = await remoteDataSource.fetchAllTasks();
+      // 1. جلب البيانات من السيرفر (ترجع TasksResponseModel الذي يحتوي مهام + ملخص)
+      final remoteResponse = await remoteDataSource.fetchAllTasks();
+      
+      // 2. كاش للمهام فقط (لا حاجة لعمل كاش للملخص لأنه يُحسب من المهام)
       await localDataSource.cacheTasks(
-        remoteTasks.map((e) => e as TaskModel).toList(),
+        remoteResponse.tasks.map((e) => e as TaskModel).toList(),
       );
-      return Right(remoteTasks);
+      
+      // 3. إرجاع الكيان الجامع بنجاح
+      return Right(remoteResponse);
+      
     } catch (e) {
       try {
+        // 4. انقطع الإنترنت! جلب المهام من الذاكرة المحلية
         final localTasks = await localDataSource.getCachedTasks();
+        
         if (localTasks.isNotEmpty) {
-          return Right(localTasks);
+          // 🚀 Senior Move: حساب الملخص محلياً بناءً على الكاش!
+          final completed = localTasks.where((t) => t.status == TaskStatus.done).length;
+          final total = localTasks.length;
+          final percentage = total == 0 ? 0.0 : (completed / total) * 100;
+          
+          final localSummary = TaskSummaryEntity(
+            totalTasksToday: total,
+            completedTasks: completed,
+            completionPercentage: percentage,
+          );
+
+          // تغليف المهام المحلية والملخص المحلي في كيان واحد
+          final localResponse = TasksResponseEntity(
+            tasks: localTasks, 
+            summary: localSummary,
+          );
+
+          return Right(localResponse);
         } else {
           return Left(
-            ServerFailure(
-              'there is no internet connection and no cached data available.',
-              503,
-            ),
+            ServerFailure('there is no internet connection and no cached data available.', 503),
           );
         }
       } catch (cacheError) {
@@ -54,8 +78,14 @@ class HomeRepoImp extends HomeRepo {
 
   @override
   Future<Either<Failure, TaskSummaryEntity>> getTaskSummary() async {
-    // سيتم تطبيق نفس المنطق الهندسي (الذهاب للنت ثم الكاش) هنا لاحقاً
-    throw UnimplementedError();
+    try {
+      final summary = await remoteDataSource.fetchTasksSummary();
+      return Right(summary);
+    } catch (e) {
+      return Left(
+        ServerFailure('Failed to fetch task summary. Please try again.', 500),
+      );
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:taskflow/Core/Utils/failure.dart';
 import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source.dart';
 import 'package:taskflow/Features/Task/Data/Data_sources/task_remote_data_source.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/subtask_entity.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'package:taskflow/Features/Task/Domain/Repos/task_repo.dart';
 
@@ -46,6 +47,24 @@ class TaskRepoImp extends TaskRepo {
   ) {
     // TODO: implement updateTask
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, SubtaskEntity>> createSubtask(SubtaskEntity subtask) async {
+    try {
+      var result = await remoteDataSource.createSubtask(
+        title: subtask.title,
+        description: subtask.subtitle ?? "",
+        priority: _mapPriorityToString(subtask.priority),
+        status: _mapStatusToString(subtask.status),
+        taskId: subtask.taskId,
+      );
+      return Right(result);
+    } catch (e) {
+      return Left(
+        ServerFailure('there is an error while fetching cached data.', 500),
+      );
+    }
   }
 }
 // --- دوال مساعدة لترجمة الـ Enums للغة السيرفر (Documentation) ---

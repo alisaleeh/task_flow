@@ -25,7 +25,7 @@ class TasksSliverList extends StatelessWidget {
           return TaskCard(
             task: task,
             onOpenDetails: () {
-              Navigator.pushNamed(context, AppRoutes.taskDetails);
+              Navigator.pushNamed(context, AppRoutes.taskDetails, arguments: task);
             },
             onDelete: () {
               DeleteTaskDialog.show(

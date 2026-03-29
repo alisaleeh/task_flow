@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<TaskCubit>(); // جلب الـ Cubit للوصول لبيانات المستخدم
+   final String fullname= '${cubit.firstName} ${cubit.lastName}'.trim(); // بناء الاسم الكامل من الاسم الأول والأخير
     return Column(
       children: [
         // Avatar with Edit Badge
@@ -42,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
         AppSpacing.gapV16,
         // Name
         Text(
-          'Alex Johnson',
+          fullname.isNotEmpty ? fullname : 'Guest User', 
           style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold, color: AppColors.textDark),
         ),
         AppSpacing.gapV4,

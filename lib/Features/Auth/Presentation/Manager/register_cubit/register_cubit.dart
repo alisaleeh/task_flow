@@ -9,9 +9,9 @@ class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit(this.registerUseCase) : super(RegisterInitial());
   final RegisterUseCase registerUseCase;
 
-  Future<void> register(String fullName, String email, String password) async {
+  Future<void> register(String firstname, String lastname, String email, String password) async {
     emit(RegisterLoading());
-    final result = await registerUseCase.register(fullName, email, password);
+    final result = await registerUseCase.register(firstname, lastname, email, password);
     result.fold(
       (failure) => emit(RegisterFailure(failure.errorMessage)),
       (userEntity) => emit(RegisterSuccess(userEntity)),

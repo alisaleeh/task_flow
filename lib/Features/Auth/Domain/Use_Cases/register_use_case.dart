@@ -9,10 +9,11 @@ class RegisterUseCase {
   RegisterUseCase({required this.authRepo});
 
   Future<Either<Failure, UserEntity>> register(
-    String fullName,
+    String firstname,
+    String lastname,
     String email,
     String password,
   ) {
-    return authRepo.register(fullName, email, password);
+    return authRepo.register(firstname, lastname, email, password);
   }
 }

@@ -6,7 +6,8 @@ abstract class AuthRepo {
   Future<Either<Failure, UserEntity>> login(String email, String password);
 
   Future<Either<Failure, UserEntity>> register(
-    String fullName,
+    String firstName,
+    String lastName,
     String email,
     String password,
   );

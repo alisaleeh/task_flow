@@ -19,6 +19,7 @@ import 'package:taskflow/Features/Home/Data/Repos/home_repo_imp.dart';
 import 'package:taskflow/Features/Home/Domain/Repos/home_repo.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/delete_task_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/get_all_tasks_use_case.dart';
+import 'package:taskflow/Features/Home/Domain/Use_Cases/get_task_summary_use_case.dart';
 import 'package:taskflow/Features/Home/Domain/Use_Cases/update_task_use_case.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source.dart';
@@ -26,6 +27,7 @@ import 'package:taskflow/Features/Task/Data/Data_sources/task_loacal_data_source
 import 'package:taskflow/Features/Task/Data/Data_sources/task_remote_data_source.dart';
 import 'package:taskflow/Features/Task/Data/Repo/task_repo_imp.dart';
 import 'package:taskflow/Features/Task/Domain/Repos/task_repo.dart';
+import 'package:taskflow/Features/Task/Domain/Use_Cases/create_sub_task_use_case.dart';
 import 'package:taskflow/Features/Task/Domain/Use_Cases/create_tesk_use_case.dart';
 import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
 
@@ -96,6 +98,13 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<UpdateTaskUseCase>(
     () => UpdateTaskUseCase(homeRepo: getIt()),
   );
+  getIt.registerLazySingleton<GetTaskSummaryUseCase>(
+    () => GetTaskSummaryUseCase(homeRepo: getIt()),
+  );
+   getIt.registerLazySingleton<CreateSubTaskUseCase>(
+    () => CreateSubTaskUseCase(taskRepo: getIt()),
+  );
+
 
 
   getIt.registerFactory<TaskCubit>(() => TaskCubit(getIt(), getIt(), getIt()));
@@ -114,6 +123,6 @@ Future<void> setupServiceLocator() async {
     () => TaskRepoImp(remoteDataSource: getIt(), localDataSource: getIt()),
   );
 
-  getIt.registerFactory<CreateTaskCubit>(() => CreateTaskCubit(getIt()));
+  getIt.registerFactory<CreateTaskCubit>(() => CreateTaskCubit(getIt(), getIt()));
   
 }
