@@ -1,32 +1,55 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskflow/Features/Home/Data/Models/task_model.dart';
+import 'package:taskflow/Features/Home/Domain/Entities/task_summary_entity.dart';
 
 abstract class HomeLocalDataSource {
   Future<void> cacheTasks(List<TaskModel> tasksToCache);
+  Future<void> cacheTaskSummary(TaskSummaryEntity summary);
+  Future<TaskSummaryEntity?> getCachedTaskSummary();
   Future<List<TaskModel>> getCachedTasks();
 }
 
 class HomeLocalDataSourceImpl implements HomeLocalDataSource {
   final SharedPreferences sharedPreferences;
-  
-  // المفتاح السري الذي سنحفظ به المهام
+
   static const cachedTasksKey = 'CACHED_TASKS';
+  static const cachedTaskSummaryKey = 'CACHED_TASK_SUMMARY';
 
   HomeLocalDataSourceImpl({required this.sharedPreferences});
 
   @override
   Future<void> cacheTasks(List<TaskModel> tasksToCache) async {
-    // 1. تحويل قائمة الموديلز إلى قائمة من الـ Maps
-    List<Map<String, dynamic>> taskModelsToJson = tasksToCache
-        .map((taskModel) => taskModel.toJson())
-        .toList();
+    // كل مهمة تُحفظ مع مصفوفة subtasks داخل نفس الكائن (انظر TaskModel.toJson).
+    final taskModelsToJson = tasksToCache.map((t) => t.toJson()).toList();
+    await sharedPreferences.setString(cachedTasksKey, jsonEncode(taskModelsToJson));
+  }
 
-    // 2. تحويل الـ Maps إلى نص (JSON String) لكي يقبله الشيرد بريفرنس
-    String jsonString = jsonEncode(taskModelsToJson);
+  @override
+  Future<void> cacheTaskSummary(TaskSummaryEntity summary) async {
+    final map = <String, dynamic>{
+      'totalTasksToday': summary.totalTasksToday,
+      'completedTasks': summary.completedTasks,
+      'completionPercentage': summary.completionPercentage,
+    };
+    await sharedPreferences.setString(
+      cachedTaskSummaryKey,
+      jsonEncode(map),
+    );
+  }
 
-    // 3. الحفظ في الذاكرة المحلية
-    await sharedPreferences.setString(cachedTasksKey, jsonString);
+  @override
+  Future<TaskSummaryEntity?> getCachedTaskSummary() async {
+    final jsonString = sharedPreferences.getString(cachedTaskSummaryKey);
+    if (jsonString == null) return null;
+    final map = jsonDecode(jsonString);
+    if (map is! Map) return null;
+    final m = Map<String, dynamic>.from(map);
+    return TaskSummaryEntity(
+      totalTasksToday: (m['totalTasksToday'] as num).toInt(),
+      completedTasks: (m['completedTasks'] as num).toInt(),
+      completionPercentage: (m['completionPercentage'] as num).toDouble(),
+    );
   }
 
   @override
@@ -38,9 +61,12 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
       // 2. فك التشفير من نص إلى قائمة من الـ dynamic
       List<dynamic> decodeJsonData = jsonDecode(jsonString);
 
-      // 3. تحويل الـ dynamic إلى قائمة من TaskModel
-      List<TaskModel> jsonToTaskModels = decodeJsonData
-          .map<TaskModel>((jsonTaskModel) => TaskModel.fromJson(jsonTaskModel))
+      final jsonToTaskModels = decodeJsonData
+          .map<TaskModel>(
+            (jsonTaskModel) => TaskModel.fromJson(
+              Map<String, dynamic>.from(jsonTaskModel as Map),
+            ),
+          )
           .toList();
 
       return jsonToTaskModels;

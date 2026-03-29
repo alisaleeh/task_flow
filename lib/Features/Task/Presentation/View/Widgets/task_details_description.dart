@@ -10,23 +10,20 @@ class TaskDetailsDescription extends StatelessWidget {
 final String? description ;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionTitle(title: 'DESCRIPTION'),
-          AppSpacing.gapV12,
-          Text(
-            description ?? 'No description available.' ,
-            style: AppTextStyles.font14RegularLight.copyWith(
-              height: 1.6, 
-              fontSize: 15.sp, 
-              color: AppColors.textDark.withOpacity(0.7),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionTitle(title: 'DESCRIPTION'),
+        AppSpacing.gapV12,
+        Text(
+          description ?? 'No description available.',
+          style: AppTextStyles.font14RegularLight.copyWith(
+            height: 1.6,
+            fontSize: 15.sp,
+            color: AppColors.textDark.withOpacity(0.7),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

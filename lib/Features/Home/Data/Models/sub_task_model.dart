@@ -12,6 +12,20 @@ class SubtaskModel extends SubtaskEntity {
     super.subtitle,
   });
 
+  /// يدعم الكاش: أي [SubtaskEntity] يُحوَّل لشكل JSON متوافق مع [fromJson].
+  static Map<String, dynamic> mapEntityToJson(SubtaskEntity e) {
+    if (e is SubtaskModel) return e.toJson();
+    return SubtaskModel(
+      id: e.id,
+      title: e.title,
+      isDone: e.isDone,
+      taskId: e.taskId,
+      priority: e.priority,
+      status: e.status,
+      subtitle: e.subtitle,
+    ).toJson();
+  }
+
   factory SubtaskModel.fromJson(Map<String, dynamic> json) {
     return SubtaskModel(
       id: json['id'] as String? ?? '',

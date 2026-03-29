@@ -29,10 +29,13 @@ class TaskModel extends TaskEntity {
           ? DateTime.tryParse(json['createdAt']) ?? DateTime.now()
           : DateTime.now(),
           
-      // 👈 تحويل قائمة المهام الفرعية بأمان
       subtasks: json['subtasks'] != null
-          ? (json['subtasks'] as List)
-              .map((subJson) => SubtaskModel.fromJson(subJson as Map<String, dynamic>))
+          ? (json['subtasks'] as List<dynamic>)
+              .map(
+                (sub) => SubtaskModel.fromJson(
+                  Map<String, dynamic>.from(sub as Map),
+                ),
+              )
               .toList()
           : const [],
     );
@@ -46,8 +49,7 @@ class TaskModel extends TaskEntity {
       'status': _statusToString(status),
       'priority': _priorityToString(priority),
       'createdAt': dueDate.toIso8601String(),
-      // 👈 تحويل القائمة لـ JSON باستخدام الـ Model
-      'subtasks': subtasks.map((e) => (e as SubtaskModel).toJson()).toList(),
+      'subtasks': subtasks.map(SubtaskModel.mapEntityToJson).toList(),
     };
   }
 
@@ -66,10 +68,14 @@ class TaskModel extends TaskEntity {
 
   static String _statusToString(TaskStatus status) {
     switch (status) {
-      case TaskStatus.inProgress: return 'IN_PROGRESS';
-      case TaskStatus.done: return 'DONE';
-case TaskStatus.open: return 'OPEN'; // ✅ التعديل الذهبي لحل مشكلة 400    }
-  }}
+      case TaskStatus.inProgress:
+        return 'IN_PROGRESS';
+      case TaskStatus.done:
+        return 'DONE';
+      case TaskStatus.open:
+        return 'OPEN';
+    }
+  }
 
   static TaskPriority _parsePriority(String? priorityText) {
     switch (priorityText?.toUpperCase()) {

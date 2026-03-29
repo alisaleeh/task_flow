@@ -11,7 +11,7 @@ final class TaskSuccess extends TaskState {
   final List<TaskEntity> task;
   final TaskSummaryEntity? taskSummaryEntity;
 
-  TaskSuccess(this.taskSummaryEntity, {required this.task});
+  TaskSuccess({required this.task, this.taskSummaryEntity});
 }
 
 final class TaskFailure extends TaskState {

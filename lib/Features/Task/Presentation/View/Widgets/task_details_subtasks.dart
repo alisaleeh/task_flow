@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // 👈 أضفنا bloc
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Core/Constants/app_text_styles.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/subtask_entity.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
@@ -20,9 +21,8 @@ class TaskDetailsSubtasks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 💡 ملاحظة Tech Lead: بما أننا نستخدم BlocProvider في الشاشة الأب، الـ context هنا يرى الـ Cubit
     return SliverPadding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: EdgeInsets.symmetric(horizontal: 36.w),
       sliver: SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
@@ -33,7 +33,6 @@ class TaskDetailsSubtasks extends StatelessWidget {
                 children: [
                   const SectionTitle(title: 'SUBTASKS'),
                   GestureDetector(
-                    // 👈 نمرر الـ context الحالي للـ Sheet
                     onTap: () => _showAddSubtaskSheet(context),
                     child: Container(
                       padding: EdgeInsets.all(4.w),
@@ -94,69 +93,184 @@ class TaskDetailsSubtasks extends StatelessWidget {
   }
 
   void _showAddSubtaskSheet(BuildContext parentContext) {
-    final controller = TextEditingController();
-
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: parentContext,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (context) => Padding(
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.45),
+      builder: (sheetContext) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 24.w,
-          right: 24.w,
-          top: 20.h,
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
         ),
+        child: _AddSubtaskBottomSheet(
+          taskId: taskId,
+          cubitContext: parentContext,
+        ),
+      ),
+    );
+  }
+}
+
+class _AddSubtaskBottomSheet extends StatefulWidget {
+  const _AddSubtaskBottomSheet({
+    required this.taskId,
+    required this.cubitContext,
+  });
+
+  final String taskId;
+  final BuildContext cubitContext;
+
+  @override
+  State<_AddSubtaskBottomSheet> createState() => _AddSubtaskBottomSheetState();
+}
+
+class _AddSubtaskBottomSheetState extends State<_AddSubtaskBottomSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final title = _controller.text.trim();
+    if (title.isEmpty) return;
+
+    final newSubtask = SubtaskEntity(
+      id: '',
+      title: title,
+      isDone: false,
+      taskId: widget.taskId,
+      priority: TaskPriority.medium,
+      status: TaskStatus.open,
+      subtitle: '',
+    );
+
+    widget.cubitContext.read<CreateTaskCubit>().createSubtask(newSubtask);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(24.w, 10.h, 24.w, 24.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Center(
+              child: Container(
+                width: 36.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: AppColors.borderColor,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            SizedBox(height: 20.h),
             Text(
-              'Add New Subtask',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+              'New subtask',
+              style: AppTextStyles.font18SemiBoldDark,
+              textAlign: TextAlign.center,
             ),
-            AppSpacing.gapV16,
+            SizedBox(height: 8.h),
+            Text(
+              'Add a short title for this step.',
+              style: AppTextStyles.font15RegularLight,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24.h),
+            Text('Title', style: AppTextStyles.font14SemiBoldDark),
+            SizedBox(height: 8.h),
             TextField(
-              controller: controller,
+              controller: _controller,
               autofocus: true,
-              decoration: const InputDecoration(
-                hintText: 'Enter subtask title...',
-                border: OutlineInputBorder(),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+              style: AppTextStyles.font16RegularDark,
+              decoration: InputDecoration(
+                hintText: 'e.g. Review design mockups',
+                hintStyle: AppTextStyles.font15RegularLight,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 16.h,
+                ),
+                filled: true,
+                fillColor: AppColors.surfaceColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                  borderSide: const BorderSide(color: AppColors.borderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                  borderSide: const BorderSide(color: AppColors.borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                  borderSide: const BorderSide(
+                    color: AppColors.primaryOrange,
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
-            AppSpacing.gapV16,
-            // 🚀 ربط الزر بالكيوبت
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final title = controller.text.trim();
-                  if (title.isNotEmpty) {
-                    final newSubtask = SubtaskEntity(
-                      id: '', 
-                      title: title,
-                      isDone: false,
-                      taskId: taskId, 
-                      priority:
-                          TaskPriority.medium, 
-                      status: TaskStatus.open, 
-                      subtitle: '', 
-                    );
-
-                    // 🚀 مناداة الكيوبت
-                    parentContext.read<CreateTaskCubit>().createSubtask(
-                      newSubtask,
-                    );
-
-                    // 🚀 إغلاق النافذة
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Add Subtask'),
-              ),
+            SizedBox(height: 20.h),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      foregroundColor: AppColors.textLight,
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: AppTextStyles.font16RegularDark.copyWith(
+                        color: AppColors.textLight,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  flex: 2,
+                  child: FilledButton(
+                    onPressed: _submit,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryOrange,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Add',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            AppSpacing.gapV64,
           ],
         ),
       ),

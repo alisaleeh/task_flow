@@ -54,7 +54,7 @@ class TaskCubit extends Cubit<TaskState> {
           emit(
             TaskSuccess(
               task: responseEntity.tasks,
-              responseEntity.summary, // 👈 استخدم اسم المتغير الصحيح لديك
+              taskSummaryEntity: responseEntity.summary,
             ),
           );
         },
@@ -94,7 +94,7 @@ class TaskCubit extends Cubit<TaskState> {
       final newSummary = _updateSummaryOnDelete(backupSummary!, wasDone);
 
       // 🚀 نصدر القائمة والملخص الجديد فوراً
-      emit(TaskSuccess(task: optimisticTasks, newSummary));
+      emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
 
       // 🌐 نرسل للسيرفر بصمت
       var result = await deleteTaskUseCase.call(taskId);
@@ -103,11 +103,11 @@ class TaskCubit extends Cubit<TaskState> {
         (failure) {
           emit(DeleteTaskError(errormessage: failure.errorMessage));
           // 🔄 تراجع
-          emit(TaskSuccess(task: backupTasks, backupSummary));
+          emit(TaskSuccess(task: backupTasks, taskSummaryEntity: backupSummary));
         },
         (_) {
           emit(DeleteTaskSuccess());
-          emit(TaskSuccess(task: optimisticTasks, newSummary));
+          emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
         },
       );
     }
@@ -161,7 +161,7 @@ class TaskCubit extends Cubit<TaskState> {
         final newSummary = _updateSummaryOnToggle(backupSummary!, isNowDone);
 
         // 🚀 إصدار القائمة المحدثة + الملخص الجديد
-        emit(TaskSuccess(task: optimisticTasks, newSummary));
+        emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
       }
 
       // 🌐 نكلم السيرفر بصمت
@@ -171,7 +171,7 @@ class TaskCubit extends Cubit<TaskState> {
         (failure) {
           emit(UpdateTaskError(failure.errorMessage));
           // 🔄 تراجع
-          emit(TaskSuccess(task: backupTasks, backupSummary));
+          emit(TaskSuccess(task: backupTasks, taskSummaryEntity: backupSummary));
         },
         (_) {
           /* ✅ نجاح صامت */

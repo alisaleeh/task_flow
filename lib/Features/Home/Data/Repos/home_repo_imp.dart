@@ -31,10 +31,9 @@ class HomeRepoImp extends HomeRepo {
       // 1. جلب البيانات من السيرفر (ترجع TasksResponseModel الذي يحتوي مهام + ملخص)
       final remoteResponse = await remoteDataSource.fetchAllTasks();
       
-      // 2. كاش للمهام فقط (لا حاجة لعمل كاش للملخص لأنه يُحسب من المهام)
-      await localDataSource.cacheTasks(
-        remoteResponse.tasks.map((e) => e as TaskModel).toList(),
-      );
+      final models = remoteResponse.tasks.map((e) => e as TaskModel).toList();
+      await localDataSource.cacheTasks(models);
+      await localDataSource.cacheTaskSummary(remoteResponse.summary);
       
       // 3. إرجاع الكيان الجامع بنجاح
       return Right(remoteResponse);
@@ -45,16 +44,22 @@ class HomeRepoImp extends HomeRepo {
         final localTasks = await localDataSource.getCachedTasks();
         
         if (localTasks.isNotEmpty) {
-          // 🚀 Senior Move: حساب الملخص محلياً بناءً على الكاش!
-          final completed = localTasks.where((t) => t.status == TaskStatus.done).length;
-          final total = localTasks.length;
-          final percentage = total == 0 ? 0.0 : (completed / total) * 100;
-          
-          final localSummary = TaskSummaryEntity(
-            totalTasksToday: total,
-            completedTasks: completed,
-            completionPercentage: percentage,
-          );
+          final cachedSummary = await localDataSource.getCachedTaskSummary();
+          final TaskSummaryEntity localSummary;
+          if (cachedSummary != null) {
+            localSummary = cachedSummary;
+          } else {
+            final completed =
+                localTasks.where((t) => t.status == TaskStatus.done).length;
+            final total = localTasks.length;
+            final percentage =
+                total == 0 ? 0.0 : (completed / total) * 100;
+            localSummary = TaskSummaryEntity(
+              totalTasksToday: total,
+              completedTasks: completed,
+              completionPercentage: percentage,
+            );
+          }
 
           // تغليف المهام المحلية والملخص المحلي في كيان واحد
           final localResponse = TasksResponseEntity(

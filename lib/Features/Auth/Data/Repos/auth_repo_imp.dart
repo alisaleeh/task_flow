@@ -39,28 +39,23 @@ class AuthRepoImp extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> register(
-    String firstName,
-    String lastName,
-    String email,
-    String password,
-  ) async {
-    try {
-      final result = await remoteDataSource.register(firstName, lastName, email, password);
-      final UserEntity userEntity = result.$1;
-      final String token = result.$2;
-      await localDataSource.cacheUser(result.$1, token);
-      return Right(userEntity);
-      
-    } on AppException catch (e) {
-      // 👈 نفس المنطق هنا
-      return Left(e.failure);
-      
-    } on DioException catch (e) {
-      return Left(ServerFailure.fromDioError(e));
-      
-    } catch (e) {
-      return Left(ServerFailure("حدث خطأ غير متوقع في التطبيق.", 500));
-    }
+Future<Either<Failure, UserEntity>> register(
+  String firstName, String lastName, String email, String password,
+) async {
+  try {
+    final userEntity = await remoteDataSource.register(firstName, lastName, email, password);
+    
+    // ❌ لا نقوم بحفظ التوكن هنا، لأن السيرفر لم يرجع توكن. 
+    // المستخدم سيسجل دخوله في الشاشة التالية لأخذ التوكن.
+    
+    return Right(userEntity);
+    
+  } on AppException catch (e) {
+    return Left(e.failure);
+  } on DioException catch (e) {
+    return Left(ServerFailure.fromDioError(e));
+  } catch (e) {
+    return Left(ServerFailure("حدث خطأ غير متوقع في التطبيق.", 500));
   }
+}
 }
