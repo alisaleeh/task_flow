@@ -23,6 +23,19 @@ class TaskCubit extends Cubit<TaskState> {
   String firstName = '';
   String lastName = '';
 
+  String _dayKey(DateTime d) {
+    final local = d.toLocal();
+    return '${local.year}-${local.month}-${local.day}';
+  }
+
+  Map<String, List<TaskEntity>> _groupTasksByDay(List<TaskEntity> tasks) {
+    final map = <String, List<TaskEntity>>{};
+    for (final task in tasks) {
+      map.putIfAbsent(_dayKey(task.dueDate), () => <TaskEntity>[]).add(task);
+    }
+    return map;
+  }
+
   // 🚀 2. دالة جلب بيانات المستخدم من الكاش
   Future<void> fetchUserData() async {
     try {
@@ -50,10 +63,12 @@ class TaskCubit extends Cubit<TaskState> {
       result.fold(
         (failure) => emit(TaskFailure(errorMessage: failure.errorMessage)),
         (responseEntity) {
+          final groupedTasks = _groupTasksByDay(responseEntity.tasks);
           // 🚀 السيرفر أعطانا المهام والملخص الجاهز، نمررهم للشاشة فوراً
           emit(
             TaskSuccess(
               task: responseEntity.tasks,
+              tasksByDay: groupedTasks,
               taskSummaryEntity: responseEntity.summary,
             ),
           );
@@ -92,9 +107,16 @@ class TaskCubit extends Cubit<TaskState> {
 
       // 🧮 نحسب الملخص الجديد ذكياً (بدون قراءة القائمة كلها)
       final newSummary = _updateSummaryOnDelete(backupSummary!, wasDone);
+      final optimisticTasksByDay = _groupTasksByDay(optimisticTasks);
 
       // 🚀 نصدر القائمة والملخص الجديد فوراً
-      emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
+      emit(
+        TaskSuccess(
+          task: optimisticTasks,
+          tasksByDay: optimisticTasksByDay,
+          taskSummaryEntity: newSummary,
+        ),
+      );
 
       // 🌐 نرسل للسيرفر بصمت
       var result = await deleteTaskUseCase.call(taskId);
@@ -103,11 +125,23 @@ class TaskCubit extends Cubit<TaskState> {
         (failure) {
           emit(DeleteTaskError(errormessage: failure.errorMessage));
           // 🔄 تراجع
-          emit(TaskSuccess(task: backupTasks, taskSummaryEntity: backupSummary));
+          emit(
+            TaskSuccess(
+              task: backupTasks,
+              tasksByDay: _groupTasksByDay(backupTasks),
+              taskSummaryEntity: backupSummary,
+            ),
+          );
         },
         (_) {
           emit(DeleteTaskSuccess());
-          emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
+          emit(
+            TaskSuccess(
+              task: optimisticTasks,
+              tasksByDay: optimisticTasksByDay,
+              taskSummaryEntity: newSummary,
+            ),
+          );
         },
       );
     }
@@ -159,9 +193,16 @@ class TaskCubit extends Cubit<TaskState> {
         // نقارن هل الحالة الجديدة التي أرسلناها هي DONE؟
         final isNowDone = status?.toUpperCase() == 'DONE';
         final newSummary = _updateSummaryOnToggle(backupSummary!, isNowDone);
+        final optimisticTasksByDay = _groupTasksByDay(optimisticTasks);
 
         // 🚀 إصدار القائمة المحدثة + الملخص الجديد
-        emit(TaskSuccess(task: optimisticTasks, taskSummaryEntity: newSummary));
+        emit(
+          TaskSuccess(
+            task: optimisticTasks,
+            tasksByDay: optimisticTasksByDay,
+            taskSummaryEntity: newSummary,
+          ),
+        );
       }
 
       // 🌐 نكلم السيرفر بصمت
@@ -171,7 +212,13 @@ class TaskCubit extends Cubit<TaskState> {
         (failure) {
           emit(UpdateTaskError(failure.errorMessage));
           // 🔄 تراجع
-          emit(TaskSuccess(task: backupTasks, taskSummaryEntity: backupSummary));
+          emit(
+            TaskSuccess(
+              task: backupTasks,
+              tasksByDay: _groupTasksByDay(backupTasks),
+              taskSummaryEntity: backupSummary,
+            ),
+          );
         },
         (_) {
           /* ✅ نجاح صامت */

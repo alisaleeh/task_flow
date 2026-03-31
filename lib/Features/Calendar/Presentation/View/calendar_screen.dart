@@ -23,30 +23,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
 
-  Map<String, List<TaskEntity>> _tasksByDay = <String, List<TaskEntity>>{};
-
-  String _dayKey(DateTime d) {
-    final local = d.toLocal();
-    return '${local.year}-${local.month}-${local.day}';
-  }
-
-  void _rebuildTasksIndex(List<TaskEntity> tasks) {
-    final map = <String, List<TaskEntity>>{};
-    for (final t in tasks) {
-      map.putIfAbsent(_dayKey(t.dueDate), () => <TaskEntity>[]).add(t);
-    }
-    _tasksByDay = map;
-  }
-
-  List<TaskEntity> _tasksForSelectedDay() {
-    return _tasksByDay[_dayKey(_selectedDay)] ?? const <TaskEntity>[];
-  }
-
-  List<String> _eventLoader(DateTime day) {
-    final list = _tasksByDay[_dayKey(day)];
-    return (list != null && list.isNotEmpty) ? const ['Task'] : const [];
-  }
-
   @override
   void initState() {
     super.initState();
@@ -75,14 +51,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       backgroundColor: context.appThemeColors.backgroundColor,
       body: SafeArea(
-        child: BlocListener<TaskCubit, TaskState>(
-          listener: (context, state) {
-            if (state is TaskSuccess) {
-              _rebuildTasksIndex(state.task);
-              setState(() {});
+        child: BlocBuilder<TaskCubit, TaskState>(
+          builder: (context, state) {
+            final tasksByDay = state is TaskSuccess
+                ? state.tasksByDay
+                : const <String, List<TaskEntity>>{};
+
+            String dayKey(DateTime d) {
+              final local = d.toLocal();
+              return '${local.year}-${local.month}-${local.day}';
             }
-          },
-          child: CustomScrollView(
+
+            List<TaskEntity> tasksForSelectedDay() {
+              return tasksByDay[dayKey(_selectedDay)] ?? const <TaskEntity>[];
+            }
+
+            List<String> eventLoader(DateTime day) {
+              final list = tasksByDay[dayKey(day)];
+              return (list != null && list.isNotEmpty) ? const ['Task'] : const [];
+            }
+
+            return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(child: AppSpacing.gapV24),
@@ -94,7 +83,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: CustomCalendarCard(
                   selectedDay: _selectedDay,
                   focusedDay: _focusedDay,
-                  eventLoader: _eventLoader,
+                  eventLoader: eventLoader,
                   onDaySelected: (selected, focused) {
                     setState(() {
                       _selectedDay = selected;
@@ -113,11 +102,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               SliverToBoxAdapter(child: AppSpacing.gapV16),
 
-              CalendarTasksList(tasks: _tasksForSelectedDay()),
+              CalendarTasksList(tasks: tasksForSelectedDay()),
 
               SliverToBoxAdapter(child: SizedBox(height: 100.h)),
             ],
-          ),
+            );
+          },
         ),
       ),
     );

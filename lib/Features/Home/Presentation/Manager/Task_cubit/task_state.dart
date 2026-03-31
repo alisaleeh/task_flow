@@ -9,9 +9,14 @@ final class TaskLoading extends TaskState {}
 
 final class TaskSuccess extends TaskState {
   final List<TaskEntity> task;
+  final Map<String, List<TaskEntity>> tasksByDay;
   final TaskSummaryEntity? taskSummaryEntity;
 
-  TaskSuccess({required this.task, this.taskSummaryEntity});
+  TaskSuccess({
+    required this.task,
+    required this.tasksByDay,
+    this.taskSummaryEntity,
+  });
 }
 
 final class TaskFailure extends TaskState {

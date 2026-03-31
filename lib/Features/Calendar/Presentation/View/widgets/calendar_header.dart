@@ -33,18 +33,6 @@ class CalendarHeader extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: context.appThemeColors.borderColor.withOpacity(0.3),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.search,
-              color: context.appThemeColors.textDark,
-              size: 24.sp,
-            ),
-          ),
         ],
       ),
     );
