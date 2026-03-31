@@ -11,7 +11,7 @@ class ResendCodeText extends StatelessWidget {
       children: [
         Text(
           "Didn't receive the code? ",
-          style: AppTextStyles.font14RegularLight,
+          style: AppTextStyles.font14RegularLight(context),
         ),
         GestureDetector(
           onTap: () {

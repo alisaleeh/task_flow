@@ -13,7 +13,7 @@ class SectionTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: 12.sp,
         fontWeight: FontWeight.bold,
-        color: AppColors.textLight.withValues(alpha:0.8),
+        color: context.appThemeColors.textLight.withValues(alpha: 0.8),
         letterSpacing: 1.2, // تباعد الأحرف لتعطي شكل التصميم
       ),
     );

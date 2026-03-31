@@ -11,7 +11,7 @@ class AlreadyHaveAccountText extends StatelessWidget {
       children: [
         Text(
           "Already have an account? ",
-          style: AppTextStyles.font14RegularLight,
+          style: AppTextStyles.font14RegularLight(context),
         ),
         GestureDetector(
           onTap: () {

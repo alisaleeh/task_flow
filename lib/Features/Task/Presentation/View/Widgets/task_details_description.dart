@@ -17,10 +17,10 @@ final String? description ;
         AppSpacing.gapV12,
         Text(
           description ?? 'No description available.',
-          style: AppTextStyles.font14RegularLight.copyWith(
+          style: AppTextStyles.font14RegularLight(context).copyWith(
             height: 1.6,
             fontSize: 15.sp,
-            color: AppColors.textDark.withOpacity(0.7),
+            color: context.appThemeColors.textDark.withOpacity(0.7),
           ),
         ),
       ],

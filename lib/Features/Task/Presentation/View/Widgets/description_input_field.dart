@@ -15,16 +15,20 @@ class DescriptionInputField extends StatelessWidget {
       },
       controller: controller,
       maxLines: 5,
-      style: AppTextStyles.font14RegularLight.copyWith(color: AppColors.textDark),
+      style: AppTextStyles.font14RegularLight(context)
+          .copyWith(color: context.appThemeColors.textDark),
       decoration: InputDecoration(
         hintText: 'Add more details about this task...',
-        hintStyle: AppTextStyles.font14RegularLight,
+        hintStyle: AppTextStyles.font14RegularLight(context),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: context.appThemeColors.surfaceColor,
         contentPadding: EdgeInsets.all(16.w),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),
-          borderSide: BorderSide(color: AppColors.borderColor.withValues(alpha: 0.5), width: 1),
+          borderSide: BorderSide(
+            color: context.appThemeColors.borderColor.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),

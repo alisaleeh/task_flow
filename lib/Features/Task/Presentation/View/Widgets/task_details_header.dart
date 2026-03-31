@@ -20,16 +20,16 @@ class TaskDetailsHeader extends StatelessWidget {
             fontSize: 28.sp,
             fontWeight: FontWeight.w900,
             height: 1.2,
-            color: AppColors.textDark,
+            color: context.appThemeColors.textDark,
           ),
         ),
         AppSpacing.gapV16,
-        _buildStatusBadge(),
+        _buildStatusBadge(context),
       ],
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     final (String label, IconData icon, Color fg, Color bg) = switch (status) {
       TaskStatus.done => (
           'Completed',
@@ -46,8 +46,8 @@ class TaskDetailsHeader extends StatelessWidget {
       TaskStatus.open => (
           'Open',
           Icons.radio_button_unchecked_rounded,
-          AppColors.textLight,
-          AppColors.borderColor.withOpacity(0.35),
+          context.appThemeColors.textLight,
+          context.appThemeColors.borderColor.withOpacity(0.35),
         ),
     };
 

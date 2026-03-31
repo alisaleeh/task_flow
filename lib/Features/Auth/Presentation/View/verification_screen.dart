@@ -13,12 +13,13 @@ class VerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: context.appThemeColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textDark, size: 24.sp),
+          icon: Icon(Icons.arrow_back,
+              color: context.appThemeColors.textDark, size: 24.sp),
           onPressed: () => Navigator.pop(context),
         ),
       ),

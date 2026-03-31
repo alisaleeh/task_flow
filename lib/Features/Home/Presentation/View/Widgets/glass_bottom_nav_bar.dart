@@ -18,12 +18,12 @@ class GlassBottomNavBar extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // قوة التغبيش
         child: Container(
-          color: Colors.white.withValues(alpha: 0.7), // شفافية اللون الأبيض
+          color: context.appThemeColors.backgroundColor.withValues(alpha: 0.7),
           child: BottomNavigationBar(
             backgroundColor: Colors.transparent, // شفاف لتمرير تأثير الزجاج
             elevation: 0,
             selectedItemColor: AppColors.primaryOrange,
-            unselectedItemColor: AppColors.textLight,
+            unselectedItemColor: context.appThemeColors.textLight,
             showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             currentIndex: currentIndex, // 👈 1. ربط التاب النشط

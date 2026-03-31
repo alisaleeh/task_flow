@@ -69,7 +69,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     final routeTask = ModalRoute.of(context)!.settings.arguments as TaskEntity;
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceColor,
+      backgroundColor: context.appThemeColors.surfaceColor,
       appBar: CustomAppBar(title: 'Task Details'),
       body: BlocListener<CreateTaskCubit, CreateTaskState>(
         listener: (context, state) {
@@ -155,10 +155,10 @@ class _DetailsSectionCard extends StatelessWidget {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appThemeColors.surfaceColor,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: AppColors.borderColor.withOpacity(0.4),
+            color: context.appThemeColors.borderColor.withOpacity(0.4),
           ),
         ),
         child: child,

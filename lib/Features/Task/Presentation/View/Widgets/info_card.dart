@@ -28,20 +28,31 @@ class InfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: bgColor ?? const Color(0xFFF8F9FA), // لون رمادي فاتح افتراضي
+        color: bgColor ?? context.appThemeColors.surfaceColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: borderColor ?? Colors.transparent, width: 1),
+        border: Border.all(
+          color: borderColor ?? context.appThemeColors.borderColor.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: iconColor ?? AppColors.textLight, size: 20.sp),
+              Icon(
+                icon,
+                color: iconColor ?? context.appThemeColors.textLight,
+                size: 20.sp,
+              ),
               AppSpacing.gapH8,
               Text(
                 title,
-                style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: AppColors.textLight),
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.bold,
+                  color: context.appThemeColors.textLight,
+                ),
               ),
             ],
           ),
@@ -51,7 +62,7 @@ class InfoCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.bold,
-              color: valueColor ?? AppColors.textDark,
+              color: valueColor ?? context.appThemeColors.textDark,
             ),
           ),
         ],

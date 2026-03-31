@@ -37,12 +37,14 @@ class StatusSelector extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryOrange : Colors.white,
+                  color: isSelected
+                      ? AppColors.primaryOrange
+                      : context.appThemeColors.surfaceColor,
                   borderRadius: BorderRadius.circular(24.r),
                   border: Border.all(
                     color: isSelected 
                         ? AppColors.primaryOrange 
-                        : AppColors.borderColor.withOpacity(0.5),
+                        : context.appThemeColors.borderColor.withOpacity(0.5),
                   ),
                 ),
                 alignment: Alignment.center,
@@ -51,7 +53,9 @@ class StatusSelector extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13.sp, // أصغر قليلاً لأن النصوص أطول من Priority
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? Colors.white : AppColors.textDark,
+                    color: isSelected
+                        ? Colors.white
+                        : context.appThemeColors.textDark,
                   ),
                 ),
               ),

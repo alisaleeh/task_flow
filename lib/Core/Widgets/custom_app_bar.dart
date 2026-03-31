@@ -21,28 +21,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: AppBar(
           actions: actions,
           // 👈 جعل اللون أبيض بذكاء مع شفافية بسيطة (Opacity)
-          backgroundColor: Colors.white.withValues(alpha: 0.7),
+          backgroundColor:
+              context.appThemeColors.backgroundColor.withValues(alpha: 0.7),
           elevation: 0,
           centerTitle: true,
           // 👈 إزالة الحدود الحادة واستبدالها بخط خفيف جداً
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1.0),
             child: Container(
-              color: AppColors.borderColor.withValues(alpha: 0.2),
+              color:
+                  context.appThemeColors.borderColor.withValues(alpha: 0.2),
               height: 0.5, // خط أنحف لزيادة الأناقة
             ),
           ),
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: AppColors.textDark,
+              color: context.appThemeColors.textDark,
               size: 24.sp,
             ),
             onPressed: onBackPressed ?? () => Navigator.pop(context),
           ),
           title: Text(
             title,
-            style: AppTextStyles.font18SemiBoldDark.copyWith(
+            style: AppTextStyles.font18SemiBoldDark(context).copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),

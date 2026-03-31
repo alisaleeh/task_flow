@@ -2,19 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
 class CalendarTasksList extends StatelessWidget {
-  const CalendarTasksList({super.key});
+  final List<TaskEntity> tasks;
+
+  const CalendarTasksList({
+    super.key,
+    required this.tasks,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // بيانات وهمية مطابقة للتصميم
-    final tasks = [
-      {'title': 'Team Daily Standup', 'subtitle': 'Discuss project roadmap and blockers for the week.', 'time': '09:00 AM', 'category': 'WORK', 'isDone': false},
-      {'title': 'Buy birthday gift for Sarah', 'subtitle': 'Completed early morning', 'time': '11:30 AM', 'category': 'PERSONAL', 'isDone': true},
-      {'title': 'Review UI Design System', 'subtitle': 'Check the orange accents contrast on the calendar view.', 'time': '02:00 PM', 'category': 'WORK', 'isDone': false},
-      {'title': 'Evening Yoga Session', 'subtitle': '', 'time': '06:00 PM', 'category': 'HEALTH', 'isDone': false},
-    ];
+    if (tasks.isEmpty) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Text(
+            'No tasks found',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: context.appThemeColors.textLight,
+            ),
+          ),
+        ),
+      );
+    }
 
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -24,7 +38,7 @@ class CalendarTasksList extends StatelessWidget {
             final task = tasks[index];
             return Padding(
               padding: EdgeInsets.only(bottom: 16.h),
-              child: _buildCalendarTaskCard(task),
+              child: _buildCalendarTaskCard(context, task),
             );
           },
           childCount: tasks.length,
@@ -34,15 +48,26 @@ class CalendarTasksList extends StatelessWidget {
   }
 
   // الويدجت الخاصة برسم الكارت مطابقة لتصميم التقويم
-  Widget _buildCalendarTaskCard(Map<String, dynamic> task) {
-    final isDone = task['isDone'] as bool;
+  String _formatTime(DateTime d) {
+    final hour = d.hour;
+    final minute = d.minute.toString().padLeft(2, '0');
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final hour12 = hour % 12 == 0 ? 12 : hour % 12;
+    return '$hour12:$minute $period';
+  }
+
+  Widget _buildCalendarTaskCard(BuildContext context, TaskEntity task) {
+    final isDone = task.isCompleted;
     
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.appThemeColors.surfaceColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.borderColor.withOpacity(0.5), width: 1),
+        border: Border.all(
+          color: context.appThemeColors.borderColor.withOpacity(0.5),
+          width: 1,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +81,9 @@ class CalendarTasksList extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.primaryOrange, width: 2),
             ),
-            child: isDone ? Icon(Icons.check, color: Colors.white, size: 16.sp) : null,
+            child: isDone
+                ? Icon(Icons.check, color: Colors.white, size: 16.sp)
+                : null,
           ),
           AppSpacing.gapH16,
           // Task Details
@@ -75,35 +102,42 @@ class CalendarTasksList extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Text(
-                        task['category'] as String,
+                        task.priority.name.toUpperCase(),
                         style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: AppColors.primaryOrange),
                       ),
                     ),
                     Text(
-                      task['time'] as String,
-                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500, color: AppColors.textLight),
+                      _formatTime(task.dueDate),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: context.appThemeColors.textLight,
+                      ),
                     ),
                   ],
                 ),
                 AppSpacing.gapV8,
                 // Title
                 Text(
-                  task['title'] as String,
+                  task.title,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
-                    color: isDone ? AppColors.textLight : AppColors.textDark,
+                        color: isDone
+                            ? context.appThemeColors.textLight
+                            : context.appThemeColors.textDark,
                     decoration: isDone ? TextDecoration.lineThrough : null,
                   ),
                 ),
                 // Subtitle
-                if ((task['subtitle'] as String).isNotEmpty) ...[
+                if (task.subtitle != null && task.subtitle!.isNotEmpty) ...[
                   AppSpacing.gapV4,
                   Text(
-                    task['subtitle'] as String,
+                    task.subtitle!,
                     style: TextStyle(
                       fontSize: 13.sp,
-                      color: AppColors.textLight.withOpacity(0.8),
+                      color:
+                          context.appThemeColors.textLight.withOpacity(0.8),
                       height: 1.5,
                     ),
                   ),

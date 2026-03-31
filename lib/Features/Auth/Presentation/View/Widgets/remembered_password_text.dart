@@ -11,7 +11,7 @@ class RememberedPasswordText extends StatelessWidget {
       children: [
         Text(
           "Remembered your password? ",
-          style: AppTextStyles.font14RegularLight,
+          style: AppTextStyles.font14RegularLight(context),
         ),
         GestureDetector(
           onTap: () {

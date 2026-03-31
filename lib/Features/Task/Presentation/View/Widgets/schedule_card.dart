@@ -26,9 +26,11 @@ class ScheduleCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appThemeColors.surfaceColor,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.borderColor.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: context.appThemeColors.borderColor.withValues(alpha: 0.5),
+          ),
         ),
         child: Row(
           children: [
@@ -42,15 +44,18 @@ class ScheduleCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10.sp,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textLight.withValues(alpha: 0.8),
+                    color:
+                        context.appThemeColors.textLight.withValues(alpha: 0.8),
                   ),
                 ),
                 AppSpacing.gapV4,
                 Text(
                   value,
-                  style: AppTextStyles.font14RegularLight.copyWith(
+                  style: AppTextStyles.font14RegularLight(context).copyWith(
                     fontWeight: FontWeight.bold,
-                    color: value.contains('Select') ? AppColors.textDark : AppColors.primaryOrange,
+                    color: value.contains('Select')
+                        ? context.appThemeColors.textDark
+                        : AppColors.primaryOrange,
                   ),
                 ),
               ],

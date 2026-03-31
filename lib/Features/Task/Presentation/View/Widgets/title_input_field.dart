@@ -12,16 +12,19 @@ class TitleInputField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),
-      style: AppTextStyles.font18SemiBoldDark.copyWith(fontSize: 20.sp),
+      style: AppTextStyles.font18SemiBoldDark(context).copyWith(fontSize: 20.sp),
       decoration: InputDecoration(
         hintText: 'e.g., Design homepage UI...',
         hintStyle: TextStyle(
-          color: AppColors.textLight.withValues(alpha:0.5),
+          color: context.appThemeColors.textLight.withValues(alpha: 0.5),
           fontSize: 20.sp,
           fontWeight: FontWeight.w500,
         ),
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.borderColor.withValues(alpha:0.5), width: 1),
+          borderSide: BorderSide(
+            color: context.appThemeColors.borderColor.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.primaryOrange, width: 2),

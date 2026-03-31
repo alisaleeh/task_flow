@@ -18,14 +18,17 @@ class TasksLoadingWidget extends StatelessWidget {
         return Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: Colors.white, // خلفية الكارت تبقى ثابتة
+            color: Colors.white, // خلفية الكارت تبقى ثابتة داخل الـ Shimmer
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: AppColors.borderColor, width: 1),
+            border: Border.all(
+              color: context.appThemeColors.borderColor,
+              width: 1,
+            ),
           ),
           // الـ Shimmer يغلف فقط العناصر الداخلية للكارت
           child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
+            baseColor: Colors.grey.shade500,
+            highlightColor: Colors.grey.shade300,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -34,7 +37,7 @@ class TasksLoadingWidget extends StatelessWidget {
                   width: 24.w,
                   height: 24.w,
                   decoration: BoxDecoration(
-                    color: Colors.white, // اللون الأبيض هنا يعمل كـ "قناع" للـ Shimmer
+                    color: Colors.grey, // لون موحد للسكيليتون
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                 ),
@@ -51,7 +54,7 @@ class TasksLoadingWidget extends StatelessWidget {
                             width: 140.w,
                             height: 16.h,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.grey,
                               borderRadius: BorderRadius.circular(4.r),
                             ),
                           ),
@@ -60,7 +63,7 @@ class TasksLoadingWidget extends StatelessWidget {
                             width: 60.w,
                             height: 20.h,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.grey,
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
@@ -72,7 +75,7 @@ class TasksLoadingWidget extends StatelessWidget {
                         width: double.infinity,
                         height: 12.h,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.grey,
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                       ),
@@ -84,7 +87,7 @@ class TasksLoadingWidget extends StatelessWidget {
                             width: 14.w,
                             height: 14.w,
                             decoration: const BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.grey,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -93,7 +96,7 @@ class TasksLoadingWidget extends StatelessWidget {
                             width: 80.w,
                             height: 12.h,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.grey,
                               borderRadius: BorderRadius.circular(4.r),
                             ),
                           ),

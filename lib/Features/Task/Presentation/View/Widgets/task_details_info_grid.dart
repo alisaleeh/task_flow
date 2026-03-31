@@ -22,20 +22,20 @@ class TaskDetailsInfoGrid extends StatelessWidget {
     }
   }
 
-  Color _accent() {
+  Color _accent(BuildContext context) {
     switch (priority) {
       case TaskPriority.high:
         return AppColors.primaryOrange;
       case TaskPriority.medium:
         return AppColors.primaryOrange;
       case TaskPriority.low:
-        return AppColors.textLight;
+        return context.appThemeColors.textLight;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final accent = _accent();
+    final accent = _accent(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +46,7 @@ class TaskDetailsInfoGrid extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
           decoration: BoxDecoration(
-            color: AppColors.surfaceColor,
+            color: context.appThemeColors.surfaceColor,
             borderRadius: BorderRadius.circular(18.r),
             border: Border.all(
               color: accent.withOpacity(0.22),
@@ -77,7 +77,7 @@ class TaskDetailsInfoGrid extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textLight,
+                        color: context.appThemeColors.textLight,
                       ),
                     ),
                     AppSpacing.gapV4,
@@ -86,7 +86,7 @@ class TaskDetailsInfoGrid extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textDark,
+                        color: context.appThemeColors.textDark,
                         letterSpacing: 0.6,
                       ),
                     ),

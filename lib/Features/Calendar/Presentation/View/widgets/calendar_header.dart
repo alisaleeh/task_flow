@@ -17,21 +17,33 @@ class CalendarHeader extends StatelessWidget {
             children: [
               Text(
                 'Calendar',
-                style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w900, color: AppColors.textDark),
+                style: TextStyle(
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.w900,
+                  color: context.appThemeColors.textDark,
+                ),
               ),
               Text(
                 'October 2024',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: AppColors.textLight),
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: context.appThemeColors.textLight,
+                ),
               ),
             ],
           ),
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: AppColors.borderColor.withOpacity(0.3),
+              color: context.appThemeColors.borderColor.withOpacity(0.3),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.search, color: AppColors.textDark, size: 24.sp),
+            child: Icon(
+              Icons.search,
+              color: context.appThemeColors.textDark,
+              size: 24.sp,
+            ),
           ),
         ],
       ),

@@ -22,10 +22,10 @@ class TaskStatisticsCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.appThemeColors.surfaceColor,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: AppColors.borderColor.withOpacity(0.4),
+            color: context.appThemeColors.borderColor.withOpacity(0.4),
             width: 1,
           ),
         ),
@@ -37,7 +37,7 @@ class TaskStatisticsCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textLight,
+                color: context.appThemeColors.textLight,
                 letterSpacing: 1.2,
               ),
             ),
@@ -45,11 +45,11 @@ class TaskStatisticsCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _buildStatItem(completedStr, 'Tasks Completed'),
+                  child: _buildStatItem(context, completedStr, 'Tasks Completed'),
                 ),
                 AppSpacing.gapH16,
                 Expanded(
-                  child: _buildStatItem(totalStr, 'Total Tasks'),
+                  child: _buildStatItem(context, totalStr, 'Total Tasks'),
                 ),
               ],
             ),
@@ -59,7 +59,7 @@ class TaskStatisticsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String number, String label) {
+  Widget _buildStatItem(BuildContext context, String number, String label) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.h),
       decoration: BoxDecoration(
@@ -82,7 +82,7 @@ class TaskStatisticsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
-              color: AppColors.textLight,
+              color: context.appThemeColors.textLight,
             ),
           ),
         ],

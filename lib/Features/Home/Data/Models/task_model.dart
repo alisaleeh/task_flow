@@ -15,6 +15,11 @@ class TaskModel extends TaskEntity {
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
+    final dueDateText = json['dueDate'] ?? json['createdAt'];
+    final parsedDueDate = dueDateText != null
+        ? DateTime.tryParse(dueDateText.toString()) ?? DateTime.now()
+        : DateTime.now();
+
     return TaskModel(
       id: json['id'] as String? ?? '',
       title: json['title'] as String? ?? 'بدون عنوان',
@@ -23,11 +28,8 @@ class TaskModel extends TaskEntity {
       // 👈 استخدام دوال مساعدة لتحويل نصوص الـ API إلى Enums
       status: _parseStatus(json['status'] as String?),
       priority: _parsePriority(json['priority'] as String?),
-      
-      // 👈 السيرفر لا يرسل dueDate، فسنعتمد على createdAt مبدئياً
-      dueDate: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt']) ?? DateTime.now()
-          : DateTime.now(),
+
+      dueDate: parsedDueDate,
           
       subtasks: json['subtasks'] != null
           ? (json['subtasks'] as List<dynamic>)
@@ -48,6 +50,7 @@ class TaskModel extends TaskEntity {
       'description': subtitle,
       'status': _statusToString(status),
       'priority': _priorityToString(priority),
+      'dueDate': dueDate.toIso8601String(),
       'createdAt': dueDate.toIso8601String(),
       'subtasks': subtasks.map(SubtaskModel.mapEntityToJson).toList(),
     };

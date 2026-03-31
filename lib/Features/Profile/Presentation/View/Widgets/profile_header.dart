@@ -54,7 +54,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.borderColor.withOpacity(0.5),
+                  color: context.appThemeColors.borderColor.withOpacity(0.5),
                   width: 2,
                 ),
                 image: _profileImageUrl != null
@@ -64,14 +64,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       )
                     : null,
                 color: _profileImageUrl == null
-                    ? AppColors.borderColor.withOpacity(0.2)
+                    ? context.appThemeColors.borderColor.withOpacity(0.2)
                     : null,
               ),
               child: _profileImageUrl == null
                   ? Icon(
                       Icons.person_rounded,
                       size: 48.sp,
-                      color: AppColors.textLight,
+                      color: context.appThemeColors.textLight,
                     )
                   : null,
             ),
@@ -80,7 +80,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               decoration: BoxDecoration(
                 color: AppColors.primaryOrange,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(
+                  color: context.appThemeColors.backgroundColor,
+                  width: 2,
+                ),
               ),
               child: Icon(Icons.edit, color: Colors.white, size: 14.sp),
             ),
@@ -92,7 +95,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           style: TextStyle(
             fontSize: 22.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: context.appThemeColors.textDark,
           ),
         ),
         AppSpacing.gapV4,
@@ -101,7 +104,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
-            color: AppColors.textLight,
+            color: context.appThemeColors.textLight,
           ),
         ),
       ],

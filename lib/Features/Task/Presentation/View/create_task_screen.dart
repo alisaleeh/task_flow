@@ -25,9 +25,20 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  DateTime? _initialDueDate;
+
   // القيم الافتراضية كما يتوقعها الـ Selector والـ API
   String _selectedStatus = "TO_DO";
   String _selectedPriority = 'MEDIUM';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is DateTime) {
+      _initialDueDate = args;
+    }
+  }
 
   @override
   void dispose() {
@@ -39,7 +50,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.appThemeColors.backgroundColor,
       appBar: const CustomAppBar(title: 'Create New Task'),
       body: SafeArea(
         child: BlocConsumer<CreateTaskCubit, CreateTaskState>(
@@ -145,13 +156,21 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     }
 
     // تجهيز الكيان (Entity) لإرساله للكيوبت
+    final dueDate = _initialDueDate != null
+        ? DateTime(
+            _initialDueDate!.year,
+            _initialDueDate!.month,
+            _initialDueDate!.day,
+          )
+        : DateTime.now();
+
     final newTask = TaskEntity(
       id: '', // سيتم توليده في السيرفر
       title: _titleController.text.trim(),
       subtitle: _descriptionController.text.trim(),
       status: _mapStringToStatus(_selectedStatus),
       priority: _mapStringToPriority(_selectedPriority),
-      dueDate: DateTime.now(),
+      dueDate: dueDate,
     );
 
     context.createTaskCubit.createTask(newTask);

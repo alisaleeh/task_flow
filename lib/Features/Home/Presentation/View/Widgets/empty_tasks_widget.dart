@@ -13,14 +13,22 @@ class EmptyTasksWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.task_outlined, size: 80.sp, color: AppColors.borderColor),
+          Icon(
+            Icons.task_outlined,
+            size: 80.sp,
+            color: context.appThemeColors.borderColor,
+          ),
           AppSpacing.gapV16,
-          Text('No Tasks Yet!', style: AppTextStyles.font18SemiBoldDark),
+          Text(
+            'No Tasks Yet!',
+            style: AppTextStyles.font18SemiBoldDark(context),
+          ),
           AppSpacing.gapV8,
           Text(
             'Tap the + button to add your first task\nand start achieving your goals.',
             textAlign: TextAlign.center,
-            style: AppTextStyles.font14RegularLight.copyWith(height: 1.5),
+            style:
+                AppTextStyles.font14RegularLight(context).copyWith(height: 1.5),
           ),
         ],
       ),

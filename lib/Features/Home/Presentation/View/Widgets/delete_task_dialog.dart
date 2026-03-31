@@ -14,7 +14,10 @@ class DeleteTaskDialog {
             children: [
               Icon(Icons.warning_amber_rounded, color: AppColors.error),
               AppSpacing.gapH8,
-              Text('confirm deletion', style: AppTextStyles.font12RegularLight),
+              Text(
+                'confirm deletion',
+                style: AppTextStyles.font12RegularLight(dialogContext),
+              ),
             ],
           ),
           content: const Text(

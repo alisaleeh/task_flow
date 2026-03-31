@@ -14,12 +14,12 @@ class SignUpHeaderTexts extends StatelessWidget {
       children: [
         Text(
           'Create Account',
-          style: AppTextStyles.font28ExtraBoldDark,
+          style: AppTextStyles.font28ExtraBoldDark(context),
         ),
         AppSpacing.gapV8,
         Text(
           'Join us to manage your tasks effectively.',
-          style: AppTextStyles.font15RegularLight,
+          style: AppTextStyles.font15RegularLight(context),
         ),
       ],
     );

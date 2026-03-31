@@ -17,9 +17,12 @@ class HomeHeader extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('My Tasks', style: AppTextStyles.font28ExtraBoldDark),
+            Text('My Tasks', style: AppTextStyles.font28ExtraBoldDark(context)),
             AppSpacing.gapV4,
-            Text('You have ${summaryEntity.totalTasksToday} tasks today', style: AppTextStyles.font15RegularLight),
+            Text(
+              'You have ${summaryEntity.totalTasksToday} tasks today',
+              style: AppTextStyles.font15RegularLight(context),
+            ),
           ],
         ),
         SizedBox(
@@ -31,7 +34,7 @@ class HomeHeader extends StatelessWidget {
               CircularProgressIndicator(
                 value: summaryEntity.completionPercentage / 100,
                 strokeWidth: 5.w,
-                backgroundColor: AppColors.borderColor,
+                backgroundColor: context.appThemeColors.borderColor,
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryOrange),
               ),
               Center(
@@ -44,7 +47,10 @@ class HomeHeader extends StatelessWidget {
                     ),
                     Text(
                       'Done',
-                      style: TextStyle(fontSize: 10.sp, color: AppColors.textLight),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: context.appThemeColors.textLight,
+                      ),
                     ),
                   ],
                 ),

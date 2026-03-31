@@ -15,7 +15,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: context.appThemeColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -23,12 +23,15 @@ class ForgotPasswordScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textDark,
+            color: context.appThemeColors.textDark,
             size: 20.sp,
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Forgot Password', style: AppTextStyles.font18SemiBoldDark),
+        title: Text(
+          'Forgot Password',
+          style: AppTextStyles.font18SemiBoldDark(context),
+        ),
       ),
       body: SafeArea(
         top: false,
@@ -57,7 +60,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     Text(
                       'Enter your registered email address below to receive password reset instructions.',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.font15RegularLight.copyWith(
+                      style: AppTextStyles.font15RegularLight(context).copyWith(
                         height: 1.5,
                       ),
                     ),

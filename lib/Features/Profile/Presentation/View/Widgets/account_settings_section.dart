@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 import 'package:taskflow/Core/Constants/app_spacing.dart';
+import 'package:taskflow/Core/Theme/theme_cubit.dart';
+import 'package:taskflow/Core/Theme/theme_state.dart';
 
 class AccountSettingsSection extends StatefulWidget {
   const AccountSettingsSection({super.key});
@@ -12,58 +15,42 @@ class AccountSettingsSection extends StatefulWidget {
 }
 
 class _AccountSettingsSectionState extends State<AccountSettingsSection> {
-  bool isDarkMode = false; // Ephemeral State
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'ACCOUNT SETTINGS',
-            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: AppColors.textLight, letterSpacing: 1.2),
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, themeState) {
+        final isDarkMode = themeState.isDarkMode;
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ACCOUNT SETTINGS',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                  color: context.appThemeColors.textLight,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              AppSpacing.gapV16,
+              _SettingItemTile(
+                icon: Icons.dark_mode_outlined,
+                title: 'Dark Mode',
+                trailing: CupertinoSwitch(
+                  value: isDarkMode,
+                  activeColor: AppColors.primaryOrange,
+                  onChanged: (value) => context
+                      .read<ThemeCubit>()
+                      .setDarkMode(value),
+                ),
+                onTap: () => context.read<ThemeCubit>().toggleDarkMode(),
+              ),
+            ],
           ),
-          AppSpacing.gapV16,
-          
-          _SettingItemTile(
-            icon: Icons.person_outline,
-            title: 'Edit Profile',
-            trailing: Icon(Icons.chevron_right, color: AppColors.textLight, size: 24.sp),
-            onTap: () {},
-          ),
-          AppSpacing.gapV12,
-          _SettingItemTile(
-            icon: Icons.notifications_none_rounded,
-            title: 'Notifications',
-            trailing: Icon(Icons.chevron_right, color: AppColors.textLight, size: 24.sp),
-            onTap: () {},
-          ),
-          AppSpacing.gapV12,
-          _SettingItemTile(
-            icon: Icons.dark_mode_outlined,
-            title: 'Dark Mode',
-            trailing: CupertinoSwitch( // 👈 زر التشغيل الخاص بـ iOS كما في التصميم
-              value: isDarkMode,
-              activeColor: AppColors.primaryOrange,
-              onChanged: (value) {
-                setState(() => isDarkMode = value);
-              },
-            ),
-            onTap: () {
-              setState(() => isDarkMode = !isDarkMode);
-            },
-          ),
-          AppSpacing.gapV12,
-          _SettingItemTile(
-            icon: Icons.shield_outlined,
-            title: 'Security',
-            trailing: Icon(Icons.chevron_right, color: AppColors.textLight, size: 24.sp),
-            onTap: () {},
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -95,17 +82,29 @@ class _SettingItemTile extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0F4F8), // لون الخلفية للأيقونة
+                color: context.appThemeColors.surfaceColor,
                 borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: context.appThemeColors.borderColor.withOpacity(0.4),
+                  width: 1,
+                ),
               ),
-              child: Icon(icon, color: AppColors.textDark, size: 22.sp),
+              child: Icon(
+                icon,
+                color: context.appThemeColors.textDark,
+                size: 22.sp,
+              ),
             ),
             AppSpacing.gapH16,
             // العنوان
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color: AppColors.textDark),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: context.appThemeColors.textDark,
+                ),
               ),
             ),
             // العنصر الأخير (سهم أو سويتش)

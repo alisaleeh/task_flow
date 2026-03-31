@@ -11,12 +11,12 @@ class HeaderTexts extends StatelessWidget {
       children: [
         Text(
           'TaskFlow',
-          style: AppTextStyles.font28ExtraBoldDark,
+          style: AppTextStyles.font28ExtraBoldDark(context),
         ),
         AppSpacing.gapV8,
         Text(
           'Manage your daily tasks efficiently',
-          style: AppTextStyles.font15RegularLight,
+          style: AppTextStyles.font15RegularLight(context),
         ),
       ],
     );

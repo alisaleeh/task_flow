@@ -34,7 +34,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: AppTextStyles.font14SemiBoldDark),
+        Text(
+          widget.label,
+          style: AppTextStyles.font14SemiBoldDark(context),
+        ),
         AppSpacing.gapV8,
         TextFormField(
           controller: widget.controller,
@@ -44,10 +47,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
           textInputAction: widget.textinputaction,
           obscureText: widget.isPassword ? _obscureText : false,
           keyboardType: widget.keyboardType,
-          style: AppTextStyles.font16RegularDark,
+          style: AppTextStyles.font16RegularDark(context),
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: AppTextStyles.font15RegularLight,
+            hintStyle: AppTextStyles.font15RegularLight(context),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,
               vertical: 18.h,
@@ -56,11 +59,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
             fillColor: Colors.transparent,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.borderColor),
+              borderSide: BorderSide(color: context.appThemeColors.borderColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.borderColor),
+              borderSide: BorderSide(color: context.appThemeColors.borderColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
@@ -75,7 +78,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       _obscureText
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: AppColors.textLight,
+                      color: context.appThemeColors.textLight,
                       size: 22.sp,
                     ),
                     onPressed: () {

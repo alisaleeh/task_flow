@@ -11,8 +11,8 @@ class HomeHeaderLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       // 👈 ألوان الشيمر (رمادي فاتح يلمع)
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: Colors.grey.shade500,
+      highlightColor: Colors.grey.shade300,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -25,7 +25,7 @@ class HomeHeaderLoading extends StatelessWidget {
                 width: 140.w, // عرض افتراضي مقارب للكلمة
                 height: 30.h,
                 decoration: BoxDecoration(
-                  color: Colors.white, // اللون هنا لا يهم لأنه سيتغطى بالشيمر
+                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
@@ -35,7 +35,7 @@ class HomeHeaderLoading extends StatelessWidget {
                 width: 200.w,
                 height: 16.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.grey,
                   borderRadius: BorderRadius.circular(4.r),
                 ),
               ),
@@ -47,7 +47,7 @@ class HomeHeaderLoading extends StatelessWidget {
             width: 56.w,
             height: 56.w,
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey,
               shape: BoxShape.circle, // شكل دائري ليتطابق مع الـ CircularProgressIndicator
             ),
           ),

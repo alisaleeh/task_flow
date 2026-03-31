@@ -12,15 +12,15 @@ class TaskDetailsActions extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Column(
         children: [
-          _buildMarkAsDoneButton(),
+          _buildMarkAsDoneButton(context),
           AppSpacing.gapV16,
-          _buildDeleteButton(),
+          _buildDeleteButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildMarkAsDoneButton() {
+  Widget _buildMarkAsDoneButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 56.h,
@@ -43,16 +43,24 @@ class TaskDetailsActions extends StatelessWidget {
     );
   }
 
-  Widget _buildDeleteButton() {
+  Widget _buildDeleteButton(BuildContext context) {
     return Center(
       child: TextButton.icon(
         onPressed: () {
           // TODO: Trigger Cubit to delete task
         },
-        icon: Icon(Icons.delete_outline, color: AppColors.textLight, size: 20.sp),
+        icon: Icon(
+          Icons.delete_outline,
+          color: context.appThemeColors.textLight,
+          size: 20.sp,
+        ),
         label: Text(
           'Delete Task',
-          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.textLight),
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: context.appThemeColors.textLight,
+          ),
         ),
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),

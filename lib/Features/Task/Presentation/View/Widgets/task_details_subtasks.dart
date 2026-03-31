@@ -161,7 +161,7 @@ class _AddSubtaskBottomSheetState extends State<_AddSubtaskBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.appThemeColors.surfaceColor,
       borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       clipBehavior: Clip.antiAlias,
       child: Padding(
@@ -175,7 +175,7 @@ class _AddSubtaskBottomSheetState extends State<_AddSubtaskBottomSheet> {
                 width: 36.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: AppColors.borderColor,
+                  color: context.appThemeColors.borderColor,
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
@@ -183,40 +183,40 @@ class _AddSubtaskBottomSheetState extends State<_AddSubtaskBottomSheet> {
             SizedBox(height: 20.h),
             Text(
               'New subtask',
-              style: AppTextStyles.font18SemiBoldDark,
+              style: AppTextStyles.font18SemiBoldDark(context),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 8.h),
             Text(
               'Add a short title for this step.',
-              style: AppTextStyles.font15RegularLight,
+              style: AppTextStyles.font15RegularLight(context),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 24.h),
-            Text('Title', style: AppTextStyles.font14SemiBoldDark),
+            Text('Title', style: AppTextStyles.font14SemiBoldDark(context)),
             SizedBox(height: 8.h),
             TextField(
               controller: _controller,
               autofocus: true,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _submit(),
-              style: AppTextStyles.font16RegularDark,
+              style: AppTextStyles.font16RegularDark(context),
               decoration: InputDecoration(
                 hintText: 'e.g. Review design mockups',
-                hintStyle: AppTextStyles.font15RegularLight,
+                hintStyle: AppTextStyles.font15RegularLight(context),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16.w,
                   vertical: 16.h,
                 ),
                 filled: true,
-                fillColor: AppColors.surfaceColor,
+                fillColor: context.appThemeColors.surfaceColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14.r),
-                  borderSide: const BorderSide(color: AppColors.borderColor),
+                  borderSide: BorderSide(color: context.appThemeColors.borderColor),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14.r),
-                  borderSide: const BorderSide(color: AppColors.borderColor),
+                  borderSide: BorderSide(color: context.appThemeColors.borderColor),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14.r),
@@ -235,12 +235,12 @@ class _AddSubtaskBottomSheetState extends State<_AddSubtaskBottomSheet> {
                     onPressed: () => Navigator.of(context).pop(),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
-                      foregroundColor: AppColors.textLight,
+                      foregroundColor: context.appThemeColors.textLight,
                     ),
                     child: Text(
                       'Cancel',
-                      style: AppTextStyles.font16RegularDark.copyWith(
-                        color: AppColors.textLight,
+                      style: AppTextStyles.font16RegularDark(context).copyWith(
+                        color: context.appThemeColors.textLight,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

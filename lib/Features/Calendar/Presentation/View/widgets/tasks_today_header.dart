@@ -3,7 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taskflow/Core/Constants/app_colors.dart';
 
 class TasksTodayHeader extends StatelessWidget {
-  const TasksTodayHeader({super.key});
+  final DateTime selectedDay;
+  final VoidCallback onNewTask;
+
+  const TasksTodayHeader({
+    super.key,
+    required this.selectedDay,
+    required this.onNewTask,
+  });
+
+  String _formatTitle(DateTime day) {
+    final d = day.toLocal();
+    return 'Tasks for ${d.day}/${d.month}/${d.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +25,15 @@ class TasksTodayHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Tasks for today',
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: AppColors.textDark),
+            _formatTitle(selectedDay),
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: context.appThemeColors.textDark,
+            ),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: onNewTask,
             icon: Icon(Icons.add_circle_outline, color: AppColors.primaryOrange, size: 16.sp),
             label: Text(
               'New Task',

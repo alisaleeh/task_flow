@@ -13,9 +13,10 @@ abstract class TaskRemoteDataSource {
   /// 3. تجربة المستخدم: التمكن من فتح صفحة تفاصيل المهمة الجديدة مباشرة باستخدام الـ ID العائد.
   Future<TaskModel> createtask({
     required String title,
-    required String ?description,
+    required String? description,
     required String priority,
     required String status,
+    required DateTime dueDate,
   });
   Future<SubtaskEntity> createSubtask({
     required String title,
@@ -33,9 +34,10 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   @override
   Future<TaskModel> createtask({
     required String title,
-    required String ?description,
+    required String? description,
     required String priority,
     required String status,
+    required DateTime dueDate,
   }) async {
     var res = await apiService.postData(
       endpoint: "tasks/main",
@@ -44,6 +46,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
         "description": description,
         "priority": priority,
         "status": status,
+        "dueDate": dueDate.toUtc().toIso8601String(),
       },
     );
 

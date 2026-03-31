@@ -11,7 +11,7 @@ class BottomActionText extends StatelessWidget {
       children: [
         Text(
           "Don't have an account? ",
-          style: AppTextStyles.font14RegularLight,
+          style: AppTextStyles.font14RegularLight(context),
         ),
         GestureDetector(
           onTap: () {

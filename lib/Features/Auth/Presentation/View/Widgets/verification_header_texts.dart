@@ -12,12 +12,12 @@ class VerificationHeaderTexts extends StatelessWidget {
       children: [
         Text(
           'Verify Your Email',
-          style: AppTextStyles.font28ExtraBoldDark,
+          style: AppTextStyles.font28ExtraBoldDark(context),
         ),
         AppSpacing.gapV12,
         Text(
           'Please enter the 4-digit code sent to\nyour email.',
-          style: AppTextStyles.font15RegularLight.copyWith(
+          style: AppTextStyles.font15RegularLight(context).copyWith(
             height: 1.5,
           ),
         ),

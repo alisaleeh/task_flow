@@ -15,7 +15,7 @@ class CustomOtpField extends StatelessWidget {
       length: 4, // عدد المربعات
       obscureText: false,
       keyboardType: TextInputType.number,
-      textStyle: AppTextStyles.font24BoldDark,
+      textStyle: AppTextStyles.font24BoldDark(context),
       cursorColor: AppColors.primaryOrange,
       animationType: AnimationType.scale,
       
@@ -29,9 +29,9 @@ class CustomOtpField extends StatelessWidget {
         // لون الإطار للمربع الذي تقف عليه الآن (Focused)
         selectedColor: AppColors.primaryOrange,
         // لون الإطار للمربعات الفارغة (Idle)
-        inactiveColor: AppColors.borderColor,
+        inactiveColor: context.appThemeColors.borderColor,
         // لون الإطار للمربعات التي تم تعبئتها (Filled)
-        activeColor: AppColors.borderColor,
+        activeColor: context.appThemeColors.borderColor,
         
         // ألوان الخلفية (جعلناها شفافة لتطابق تصميمك)
         activeFillColor: Colors.transparent,

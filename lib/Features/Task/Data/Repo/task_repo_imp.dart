@@ -18,6 +18,7 @@ class TaskRepoImp extends TaskRepo {
         description: task.subtitle ?? "",
         priority: _mapPriorityToString(task.priority),
         status: _mapStatusToString(task.status),
+        dueDate: task.dueDate,
       );
       return Right(task);
     } catch (e) {

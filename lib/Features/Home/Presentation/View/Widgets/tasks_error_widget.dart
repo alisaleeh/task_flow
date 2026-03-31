@@ -24,12 +24,15 @@ class TasksErrorWidget extends StatelessWidget {
           children: [
             Icon(Icons.error_outline_rounded, size: 64.sp, color: Colors.redAccent),
             AppSpacing.gapV16,
-            Text('Oops! Something went wrong', style: AppTextStyles.font16BoldDark),
+            Text(
+              'Oops! Something went wrong',
+              style: AppTextStyles.font16BoldDark(context),
+            ),
             AppSpacing.gapV8,
             Text(
               errorMessage,
               textAlign: TextAlign.center,
-              style: AppTextStyles.font14RegularLight,
+              style: AppTextStyles.font14RegularLight(context),
             ),
             AppSpacing.gapV24,
             ElevatedButton.icon(

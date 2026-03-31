@@ -7,6 +7,7 @@ import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Home/Domain/Entities/task_summary_entity.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Home/Presentation/View/Widgets/home_header_loading.dart';
+import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'Widgets/home_header.dart';
 import 'Widgets/task_filter_row.dart';
 import 'Widgets/tasks_error_widget.dart';
@@ -22,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TaskStatus? _selectedStatus;
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: context.appThemeColors.backgroundColor,
       body: SafeArea(
         bottom: false,
         child: BlocConsumer<TaskCubit, TaskState>(
@@ -79,7 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _buildHeaderLogic(state),
           ),
           AppSpacing.gapV24,
-          const TaskFilterRow(),
+          TaskFilterRow(
+            selectedStatus: _selectedStatus,
+            onSelected: (value) => setState(() => _selectedStatus = value),
+          ),
           AppSpacing.gapV24,
         ],
       ),
@@ -129,10 +135,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else if (state is TaskSuccess) {
-      if (state.task.isEmpty) {
+      final effectiveStatus = _selectedStatus == TaskStatus.inProgress
+          ? null
+          : _selectedStatus;
+
+      final filteredTasks = effectiveStatus == null
+          ? state.task
+          : state.task
+              .where((t) => t.status == effectiveStatus)
+              .toList();
+
+      if (filteredTasks.isEmpty) {
         return const SliverFillRemaining(child: EmptyTasksWidget());
       }
-      return TasksSliverList(tasks: state.task);
+      return TasksSliverList(tasks: filteredTasks);
     }
 
     // Fallback حالة الصفر

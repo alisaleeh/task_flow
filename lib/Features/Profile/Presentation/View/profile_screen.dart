@@ -12,7 +12,6 @@ import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubi
 import 'Widgets/profile_header.dart';
 import 'Widgets/task_statistics_card.dart';
 import 'Widgets/account_settings_section.dart';
-import 'Widgets/logout_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -52,14 +51,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.appThemeColors.backgroundColor,
       appBar: CustomAppBar(
         title: 'Profile',
         actions: [
           IconButton(
             icon: Icon(
               Icons.more_vert_rounded,
-              color: AppColors.textDark,
+              color: context.appThemeColors.textDark,
               size: 28.sp,
             ),
             onPressed: () {
@@ -95,9 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SliverToBoxAdapter(child: AppSpacing.gapV32),
                 const SliverToBoxAdapter(child: AccountSettingsSection()),
-                SliverToBoxAdapter(child: AppSpacing.gapV40),
-                const SliverToBoxAdapter(child: LogoutButton()),
-                SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+                SliverToBoxAdapter(child: SizedBox(height: 120.h)),
               ],
             ),
           );

@@ -24,12 +24,14 @@ class TaskCard extends StatelessWidget {
     return Dismissible(
       key: Key(task.id),
       background: _buildDismissBackground(
+        context: context,
         // 👈 2. يفضل لاحقاً إضافة هذا اللون لـ AppColors (مثلاً AppColors.infoBlue)
         color: AppColors.primaryOrange,
         icon: Icons.open_in_new_rounded,
         alignment: Alignment.centerLeft,
       ),
       secondaryBackground: _buildDismissBackground(
+        context: context,
         // 👈 يفضل لاحقاً إضافة هذا اللون لـ AppColors (مثلاً AppColors.errorRed)
         color: AppColors.error,
         icon: Icons.delete_outline_rounded,
@@ -45,11 +47,12 @@ class TaskCard extends StatelessWidget {
         }
         return false;
       },
-      child: _buildCardContent(),
+      child: _buildCardContent(context),
     );
   }
 
   Widget _buildDismissBackground({
+    required BuildContext context,
     required Color color,
     required IconData icon,
     required Alignment alignment,
@@ -70,17 +73,17 @@ class TaskCard extends StatelessWidget {
           AppSpacing.gapH8,
           Text(
             icon == Icons.delete_outline_rounded ? 'Delete' : 'Details',
-            style: AppTextStyles.font16BoldDark,
+            style: AppTextStyles.font16BoldDark(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCardContent() {
+  Widget _buildCardContent(BuildContext context) {
     final bgColor = task.status==TaskStatus.done
         ? AppColors.primaryOrange.withOpacity(0.05)
-        : Colors.white;
+        : context.appThemeColors.backgroundColor;
 
     // 👈 3. غلفنا المحتوى بـ Material و InkWell لإضافة تأثير الضغط الاحترافي
     return Material(
@@ -93,12 +96,15 @@ class TaskCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: AppColors.borderColor, width: 1),
+            border: Border.all(
+              color: context.appThemeColors.borderColor,
+              width: 1,
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCheckbox(),
+              _buildCheckbox(context),
               AppSpacing.gapH12,
               Expanded(
                 child: Column(
@@ -111,21 +117,21 @@ class TaskCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             task.title,
-                            style: AppTextStyles.font16BoldDark,
+                            style: AppTextStyles.font16BoldDark(context),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         AppSpacing
                             .gapH8, // مسافة صغيرة لحماية التاج من الالتصاق بالنص
-                        _buildStatusBadge(),
+                        _buildStatusBadge(context),
                       ],
                     ),
                     if (task.subtitle != null && task.subtitle!.isNotEmpty) ...[
                       AppSpacing.gapV4,
                       Text(
                         task.subtitle!,
-                        style: AppTextStyles.font14RegularLight,
+                        style: AppTextStyles.font14RegularLight(context),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -145,7 +151,7 @@ class TaskCard extends StatelessWidget {
                               ? '${task.dueDate.hour}:${task.dueDate.minute.toString().padLeft(2, '0')} ${task.dueDate.hour >= 12 ? 'PM' : 'AM'}'
                               // ignore: dead_code
                               : 'No due time',
-                          style: AppTextStyles.font12RegularLight,
+                          style: AppTextStyles.font12RegularLight(context),
                         ),
                       ],
                     ),
@@ -159,7 +165,7 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCheckbox() {
+  Widget _buildCheckbox(BuildContext context) {
     // 👈 5. جعلنا الشيك بوكس قابلاً للضغط لتغيير حالة المهمة سريعاً
     return GestureDetector(
       onTap: onToggleCompletion,
@@ -174,7 +180,7 @@ class TaskCard extends StatelessWidget {
           border: Border.all(
             color: task.isCompleted
                 ? AppColors.primaryOrange
-                : AppColors.borderColor,
+                : context.appThemeColors.borderColor,
             width: 2,
           ),
         ),
@@ -186,14 +192,14 @@ class TaskCard extends StatelessWidget {
   }
 
   // ... (دالة _buildStatusBadge تبقى كما هي بدون تغيير)
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
     final isInProgress = task.status == TaskStatus.inProgress;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: isInProgress
             ? AppColors.primaryOrange.withOpacity(0.15)
-            : AppColors.borderColor.withOpacity(0.3),
+            : context.appThemeColors.borderColor.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Text(
@@ -201,7 +207,7 @@ class TaskCard extends StatelessWidget {
         style: TextStyle(
           fontSize: 10.sp,
           fontWeight: FontWeight.bold,
-          color: isInProgress ? AppColors.primaryOrange : AppColors.textDark,
+          color: isInProgress ? AppColors.primaryOrange : context.appThemeColors.textDark,
         ),
       ),
     );
