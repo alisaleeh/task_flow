@@ -6,7 +6,6 @@ import 'package:taskflow/Core/Utils/app_haptics.dart';
 import 'package:taskflow/Core/Utils/context_extensions.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'task_card.dart';
-import 'delete_task_dialog.dart';
 
 class TasksSliverList extends StatelessWidget {
   final List<TaskEntity> tasks;
@@ -28,10 +27,7 @@ class TasksSliverList extends StatelessWidget {
               Navigator.pushNamed(context, AppRoutes.taskDetails, arguments: task);
             },
             onDelete: () {
-              DeleteTaskDialog.show(
-                context,
-                onConfirm: () => context.taskCubit.deleteTask(task.id),
-              );
+              context.taskCubit.deleteTask(task.id);
             },
             onToggleCompletion: () {
               AppHaptics.light();

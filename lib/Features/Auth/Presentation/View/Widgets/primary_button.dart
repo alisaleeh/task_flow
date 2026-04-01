@@ -46,7 +46,7 @@ class PrimaryButton extends StatelessWidget {
           children: [
             Text(
               text,
-              style: AppTextStyles.font16BoldWhite,
+              style: AppTextStyles.font16BoldWhite(context),
             ),
             // 👈 إذا كانت hasIcon صحيحة، ارسم المسافة والأيقونة، وإلا ارسم مساحة فارغة
             if (hasIcon) ...[

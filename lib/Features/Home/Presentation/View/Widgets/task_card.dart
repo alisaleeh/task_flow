@@ -5,11 +5,58 @@ import 'package:taskflow/Core/Constants/app_spacing.dart';
 import 'package:taskflow/Core/Constants/app_text_styles.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 
+// ==========================================
+// 1. أداة الحوار المُعدلة (ترجع Future<bool>)
+// ==========================================
+class DeleteTaskDialog {
+  static Future<bool> show(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: AppColors.error),
+              AppSpacing.gapH8,
+              Text(
+                'confirm deletion',
+                style: AppTextStyles.font12RegularLight(dialogContext),
+              ),
+            ],
+          ),
+          content: const Text(
+            'are you sure you want to delete this task? this action cannot be undone.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false), // إرجاع false عند الإلغاء
+              child: const Text('cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true), // إرجاع true عند التأكيد
+              child: const Text('delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    ) ?? false; // في حال قام المستخدم بإغلاق النافذة من الخارج
+  }
+}
+
+// ==========================================
+// 2. كرت المهمة مع الـ Dismissible المُعدل
+// ==========================================
 class TaskCard extends StatelessWidget {
   final TaskEntity task;
   final VoidCallback onDelete;
   final VoidCallback onOpenDetails;
-  final VoidCallback onToggleCompletion; // 👈 1. أضفنا دالة لتغيير حالة المهمة
+  final VoidCallback onToggleCompletion;
 
   const TaskCard({
     super.key,
@@ -22,30 +69,42 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(task.id),
+      key: Key(task.id.toString()),
       background: _buildDismissBackground(
         context: context,
-        // 👈 2. يفضل لاحقاً إضافة هذا اللون لـ AppColors (مثلاً AppColors.infoBlue)
         color: AppColors.primaryOrange,
         icon: Icons.open_in_new_rounded,
         alignment: Alignment.centerLeft,
       ),
       secondaryBackground: _buildDismissBackground(
         context: context,
-        // 👈 يفضل لاحقاً إضافة هذا اللون لـ AppColors (مثلاً AppColors.errorRed)
         color: AppColors.error,
         icon: Icons.delete_outline_rounded,
         alignment: Alignment.centerRight,
       ),
+      // التعديل السحري لحل مشكلة الـ Context والأنيميشن
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          onOpenDetails();
-          return false;
+          // تأخير بسيط لمنع تعارض الأنيميشن مع انتقال الشاشة (يمنع الـ Exception)
+          Future.delayed(const Duration(milliseconds: 200), () {
+            onOpenDetails();
+          });
+          return false; // نرفض الحذف ونعيد الكرت لمكانه
         } else if (direction == DismissDirection.endToStart) {
-          onDelete();
-          return true;
+          // انتظار إجابة المستخدم من نافذة الحوار المخصصة
+          bool isConfirmed = await DeleteTaskDialog.show(context);
+          
+          // حارس الأمان: التأكد أن الصفحة لم تُغلق أثناء الانتظار
+          if (!context.mounted) return false;
+          
+          return isConfirmed; // سيختفي الكرت فقط إذا كانت النتيجة true
         }
         return false;
+      },
+      onDismissed: (direction) {
+        if (direction == DismissDirection.endToStart) {
+          onDelete(); // استدعاء الحذف لتحديث الـ Bloc وإزالة المهمة من الـ UI
+        }
       },
       child: _buildCardContent(context),
     );
@@ -73,7 +132,7 @@ class TaskCard extends StatelessWidget {
           AppSpacing.gapH8,
           Text(
             icon == Icons.delete_outline_rounded ? 'Delete' : 'Details',
-            style: AppTextStyles.font16BoldDark(context),
+            style: AppTextStyles.font16BoldDark(context).copyWith(color: Colors.white),
           ),
         ],
       ),
@@ -81,15 +140,14 @@ class TaskCard extends StatelessWidget {
   }
 
   Widget _buildCardContent(BuildContext context) {
-    final bgColor = task.status==TaskStatus.done
+    final bgColor = task.status == TaskStatus.done
         ? AppColors.primaryOrange.withOpacity(0.05)
         : context.appThemeColors.backgroundColor;
 
-    // 👈 3. غلفنا المحتوى بـ Material و InkWell لإضافة تأثير الضغط الاحترافي
     return Material(
-      color: Colors.transparent, // ضروري لكي يظهر لون الحاوية التي بالأسفل
+      color: Colors.transparent,
       child: InkWell(
-        onTap: onOpenDetails, // الضغط على الكارت يفتح التفاصيل
+        onTap: onOpenDetails,
         borderRadius: BorderRadius.circular(16.r),
         child: Container(
           padding: EdgeInsets.all(16.w),
@@ -113,7 +171,6 @@ class TaskCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // 👈 4. حماية العنوان من الانهيار إذا كان طويلاً جداً
                         Expanded(
                           child: Text(
                             task.title,
@@ -122,8 +179,7 @@ class TaskCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        AppSpacing
-                            .gapH8, // مسافة صغيرة لحماية التاج من الالتصاق بالنص
+                        AppSpacing.gapH8,
                         _buildStatusBadge(context),
                       ],
                     ),
@@ -166,7 +222,6 @@ class TaskCard extends StatelessWidget {
   }
 
   Widget _buildCheckbox(BuildContext context) {
-    // 👈 5. جعلنا الشيك بوكس قابلاً للضغط لتغيير حالة المهمة سريعاً
     return GestureDetector(
       onTap: onToggleCompletion,
       child: Container(
@@ -191,7 +246,6 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  // ... (دالة _buildStatusBadge تبقى كما هي بدون تغيير)
   Widget _buildStatusBadge(BuildContext context) {
     final isInProgress = task.status == TaskStatus.inProgress;
     return Container(

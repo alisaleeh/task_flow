@@ -19,7 +19,7 @@ class BottomActionText extends StatelessWidget {
           },
           child: Text(
             'Sign Up',
-            style: AppTextStyles.font14BoldOrange,
+            style: AppTextStyles.font14BoldOrange(context),
           ),
         ),
       ],

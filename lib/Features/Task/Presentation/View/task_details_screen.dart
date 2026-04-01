@@ -8,7 +8,6 @@ import 'package:taskflow/Core/Widgets/custom_snack_bar.dart';
 import 'package:taskflow/Features/Home/Presentation/Manager/Task_cubit/task_cubit.dart';
 import 'package:taskflow/Features/Task/Domain/Entities/task_entity.dart';
 import 'package:taskflow/Features/Task/Presentation/Manager/cubit/create_task_cubit.dart';
-import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_actions.dart';
 import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_description.dart';
 import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_header.dart';
 import 'package:taskflow/Features/Task/Presentation/View/Widgets/task_details_info_grid.dart';
@@ -125,12 +124,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     taskId: currentTask.id,
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: 36.h)),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: const TaskDetailsActions(),
-                    ),
-                  ),
+                  // SliverToBoxAdapter(
+                  //   child: Padding(
+                  //     padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  //     child: const TaskDetailsActions(),
+                  //   ),
+                  // ),
                   SliverToBoxAdapter(child: SizedBox(height: AppSpacing.s24.h)),
                 ],
               ),

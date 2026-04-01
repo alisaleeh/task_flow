@@ -17,7 +17,7 @@ class RememberedPasswordText extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
           },
-          child: Text('Log in', style: AppTextStyles.font14BoldOrange),
+          child: Text('Log in', style: AppTextStyles.font14BoldOrange(context)),
         ),
       ],
     );

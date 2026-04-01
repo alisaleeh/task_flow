@@ -19,7 +19,7 @@ class ResendCodeText extends StatelessWidget {
           },
           child: Text(
             'Resend',
-            style: AppTextStyles.font14BoldOrange,
+            style: AppTextStyles.font14BoldOrange(context),
           ),
         ),
       ],

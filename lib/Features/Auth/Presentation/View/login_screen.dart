@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: Text(
                                 'Forgot Password?',
-                                style: AppTextStyles.font14SemiBoldOrange,
+                                style: AppTextStyles.font14SemiBoldOrange(context),
                               ),
                             ),
                           ),

@@ -19,7 +19,7 @@ class AlreadyHaveAccountText extends StatelessWidget {
           },
           child: Text(
             'Log In',
-            style: AppTextStyles.font14BoldOrange,
+            style: AppTextStyles.font14BoldOrange(context),
           ),
         ),
       ],

@@ -5,6 +5,25 @@ import 'package:taskflow/Core/Constants/app_colors.dart';
 class CalendarHeader extends StatelessWidget {
   const CalendarHeader({super.key});
 
+  String _currentMonthYear() {
+    final now = DateTime.now();
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return '${monthNames[now.month - 1]} ${now.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,7 +43,7 @@ class CalendarHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                'October 2024',
+                _currentMonthYear(),
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,

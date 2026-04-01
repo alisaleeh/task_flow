@@ -51,19 +51,19 @@ class AppTextStyles {
       );
 
   // 3. نصوص الأزرار والروابط (Buttons & Links)
-  static TextStyle font16BoldWhite = TextStyle(
+  static TextStyle font16BoldWhite (BuildContext context)=> TextStyle(
     fontSize: 16.sp,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
-  static TextStyle font14SemiBoldOrange = TextStyle(
+  static TextStyle font14SemiBoldOrange (BuildContext context)=> TextStyle(
     fontSize: 14.sp,
     fontWeight: FontWeight.w600,
     color: AppColors.primaryOrange,
   );
 
-  static TextStyle font14BoldOrange = TextStyle(
+  static TextStyle font14BoldOrange (BuildContext context)=> TextStyle(
     fontSize: 14.sp,
     fontWeight: FontWeight.bold,
     color: AppColors.primaryOrange,
