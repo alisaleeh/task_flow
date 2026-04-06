@@ -17,20 +17,22 @@ class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
   HomeRemoteDataSourceImp({required this.apiService});
   @override
   Future<TasksResponseEntity> fetchAllTasks() async {
+    
     var result = await apiService.getData(endpoint: "tasks");
-
+// list of tasks data from response 
     List<dynamic> tasksList = result['data']['data'];
+// create TaskSummaryEntity from response data
     TaskSummaryEntity summary = TaskSummaryEntity(
       totalTasksToday: result['data']["totalTasks"],
       completedTasks: result['data']["completedTasks"],
       completionPercentage: (result['data']["completionPercentage"]).toDouble(),
     );
-
+// convert each task data to TaskEntity and add to list
     List<TaskEntity> tasks = [];
     for (var taskData in tasksList) {
       tasks.add(TaskModel.fromJson(taskData));
     }
-
+// return TasksResponseEntity with list of tasks and summary
     return TasksResponseEntity(tasks: tasks, summary: summary);
   }
 

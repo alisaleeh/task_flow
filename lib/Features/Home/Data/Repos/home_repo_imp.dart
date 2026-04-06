@@ -30,8 +30,9 @@ class HomeRepoImp extends HomeRepo {
     try {
       // 1. جلب البيانات من السيرفر (ترجع TasksResponseModel الذي يحتوي مهام + ملخص)
       final remoteResponse = await remoteDataSource.fetchAllTasks();
-      
+      // 2. تخزين البيانات في الذاكرة المحلية (الكاش) للرجوع إليها لاحقاً
       final models = remoteResponse.tasks.map((e) => e as TaskModel).toList();
+      //هون خزنا المهام و الملخص بالكاش 
       await localDataSource.cacheTasks(models);
       await localDataSource.cacheTaskSummary(remoteResponse.summary);
       
@@ -42,13 +43,17 @@ class HomeRepoImp extends HomeRepo {
       try {
         // 4. انقطع الإنترنت! جلب المهام من الذاكرة المحلية
         final localTasks = await localDataSource.getCachedTasks();
-        
+        //اذا كان في مهام بالكاش 
         if (localTasks.isNotEmpty) {
+          // جلب الملخص من الكاش 
           final cachedSummary = await localDataSource.getCachedTaskSummary();
           final TaskSummaryEntity localSummary;
+           // منفحص الملخص اللي اجا من الكاش 
           if (cachedSummary != null) {
+             // اذا كان موجود في الكاش نستخدمه
             localSummary = cachedSummary;
           } else {
+            // اذا ما كان موجود في الكاش نحسبه من المهام اللي عندنا في الكاش
             final completed =
                 localTasks.where((t) => t.status == TaskStatus.done).length;
             final total = localTasks.length;
@@ -84,7 +89,10 @@ class HomeRepoImp extends HomeRepo {
   @override
   Future<Either<Failure, TaskSummaryEntity>> getTaskSummary() async {
     try {
+      // 1. جلب ملخص المهام من السيرفر
       final summary = await remoteDataSource.fetchTasksSummary();
+      // 2. تخزين الملخص في الذاكرة المحلية (الكاش) للرجوع إليه لاحقاً
+      await localDataSource.cacheTaskSummary(summary);
       return Right(summary);
     } catch (e) {
       return Left(

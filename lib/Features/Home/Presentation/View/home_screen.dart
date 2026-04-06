@@ -39,6 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
         bottom: false,
         child: BlocConsumer<TaskCubit, TaskState>(
           listener: _handleBlocListener,
+          buildWhen: (previous, current) {
+            return current is TaskLoading ||
+                current is TaskFailure ||
+                current is TaskSuccess;
+          },
           builder: (context, state) {
             return RefreshIndicator(
               color: AppColors.primaryOrange,
@@ -141,9 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final filteredTasks = effectiveStatus == null
           ? state.task
-          : state.task
-              .where((t) => t.status == effectiveStatus)
-              .toList();
+          : state.task.where((t) => t.status == effectiveStatus).toList();
 
       if (filteredTasks.isEmpty) {
         return const SliverFillRemaining(child: EmptyTasksWidget());
