@@ -13,14 +13,14 @@ class TaskRepoImp extends TaskRepo {
   @override
   Future<Either<Failure, TaskEntity>> createTask(TaskEntity task) async {
     try {
-      await remoteDataSource.createtask(
+      final result = await remoteDataSource.createtask(
         title: task.title,
         description: task.subtitle ?? "",
         priority: _mapPriorityToString(task.priority),
         status: _mapStatusToString(task.status),
         dueDate: task.dueDate,
       );
-      return Right(task);
+      return Right(result);
     } catch (e) {
       return Left(
         ServerFailure('there is an error while fetching cached data.', 500),
